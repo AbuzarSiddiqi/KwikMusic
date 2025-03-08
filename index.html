@@ -7,8 +7,8 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <!-- Favicon Link -->
-    <link rel="icon" type="image/png" href="Images/KwikmusicLogo.png">
-    
+    <link rel="icon" type="image/png" href="Images/KwikmusicLogo.png" />
+
     <title>KwikMusic</title>
     <style>
       * {
@@ -1519,6 +1519,9 @@
           // Set a default artwork for old music
           playerArtwork.style.backgroundImage = `url('Images/oldmusic.jpg')`;
 
+          // Reset visibility state of player to ensure it appears even after being closed
+          musicPlayer.classList.remove("active");
+
           // Show player and play the track
           showPlayer();
           playTrack();
@@ -2003,8 +2006,12 @@
               }
             }
 
+            // Ensure the player is visible and properly positioned before playing
+            if (!musicPlayer.classList.contains("active")) {
+              showPlayer();
+            }
+
             playTrack();
-            showPlayer();
           }
         }
 
@@ -2044,6 +2051,16 @@
             playerArtwork.style.backgroundImage = "none";
             playerArtwork.style.backgroundColor = "rgba(0, 0, 0, 0.2)";
           }
+
+          // Reset positioning for mobile before showing the player
+          if (window.matchMedia("(max-width: 768px)").matches) {
+            // Center the player for mobile screens
+            musicPlayer.style.bottom = "50%";
+            musicPlayer.style.left = "50%";
+            musicPlayer.style.right = "auto";
+            musicPlayer.style.transform = "translate(-50%, 50%)";
+          }
+
           musicPlayer.classList.add("active");
 
           // Add positioned class after a small delay to allow initial animation
@@ -2069,10 +2086,11 @@
               musicPlayer.style.top = "50%";
               musicPlayer.style.transform = "translate(0, -50%)";
             } else {
-              // For mobile, reset to bottom position
-              musicPlayer.style.left = "";
-              musicPlayer.style.top = "";
+              // For mobile, ensure it's fully off-screen when hidden
               musicPlayer.style.bottom = "-100%";
+              musicPlayer.style.left = "0";
+              musicPlayer.style.right = "0";
+              musicPlayer.style.transform = "none";
             }
           }, 100);
         }
@@ -2436,10 +2454,19 @@
             // Reset position appropriately based on screen size
             if (window.matchMedia("(max-width: 768px)").matches) {
               // Mobile layout
-              musicPlayer.style.right = "";
-              musicPlayer.style.left = "";
-              musicPlayer.style.top = "";
-              musicPlayer.style.transform = "none";
+              if (musicPlayer.classList.contains("active")) {
+                // If player is active on mobile, center it
+                musicPlayer.style.bottom = "50%";
+                musicPlayer.style.left = "50%";
+                musicPlayer.style.right = "auto";
+                musicPlayer.style.transform = "translate(-50%, 50%)";
+              } else {
+                // If player is inactive on mobile, keep it off-screen
+                musicPlayer.style.bottom = "-100%";
+                musicPlayer.style.left = "0";
+                musicPlayer.style.right = "0";
+                musicPlayer.style.transform = "none";
+              }
             } else {
               // Desktop layout - reset to right side
               if (
@@ -2465,10 +2492,11 @@
                 musicPlayer.style.top = "50%";
                 musicPlayer.style.transform = "translate(0, -50%)";
               } else {
-                // For mobile, reset bottom position
-                musicPlayer.style.left = "";
-                musicPlayer.style.right = "";
-                musicPlayer.style.top = "";
+                // For mobile, center the player
+                musicPlayer.style.bottom = "50%";
+                musicPlayer.style.left = "50%";
+                musicPlayer.style.right = "auto";
+                musicPlayer.style.transform = "translate(-50%, 50%)";
               }
             },
           };
