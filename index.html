@@ -6,6 +6,9 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
+    <!-- Favicon Link -->
+    <link rel="icon" type="image/png" href="Images/KwikmusicLogo.png">
+    
     <title>KwikMusic</title>
     <style>
       * {
@@ -1208,7 +1211,7 @@
 
     <!-- Audio elements -->
     <audio id="rainSound" loop preload="auto">
-      <source src= "music/Rain.m4a" type="audio/mp4" />
+      <source src="music/Rain.m4a" type="audio/mp4" />
       Your browser does not support the audio element.
     </audio>
 
@@ -2439,8 +2442,11 @@
               musicPlayer.style.transform = "none";
             } else {
               // Desktop layout - reset to right side
-              if (!isDragging && musicPlayer.classList.contains("active") && 
-                  !musicPlayer.classList.contains("positioned")) {
+              if (
+                !isDragging &&
+                musicPlayer.classList.contains("active") &&
+                !musicPlayer.classList.contains("positioned")
+              ) {
                 musicPlayer.style.right = "20px";
                 musicPlayer.style.left = "";
                 musicPlayer.style.top = "50%";
