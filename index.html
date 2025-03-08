@@ -440,6 +440,27 @@
         .music-player.active {
           bottom: 0; /* Slide up from bottom */
           transform: none;
+          border-radius: 20px 20px 0 0; /* Ensure consistent border-radius */
+        }
+      }
+
+      /* Improved animation for mobile player */
+      @media screen and (max-width: 768px) {
+        .music-player {
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+      }
+
+      /* Fix center positioning style for mobile */
+      @media screen and (max-width: 768px) {
+        .music-player.mobile-centered {
+          bottom: 50% !important;
+          left: 50% !important;
+          width: 90% !important;
+          max-width: 320px !important;
+          border-radius: 20px !important;
+          transform: translate(-50%, 50%) !important;
+          right: auto !important;
         }
       }
 
@@ -1547,6 +1568,12 @@
         bassIshqTrack.volume = 0.7;
         dilKiDuniyaTrack.volume = 0.7;
         moonTrack.volume = 0.7;
+
+        // Set initial volume for old music tracks too
+        oldMusicTracks.forEach((track) => {
+          track.element.volume = 0.7;
+        });
+
         // Update rain volume UI
         rainVolumeLevel.style.width = `${rainSound.volume * 100}%`;
 
@@ -2054,17 +2081,45 @@
 
           // Reset positioning for mobile before showing the player
           if (window.matchMedia("(max-width: 768px)").matches) {
-            // Center the player for mobile screens
-            musicPlayer.style.bottom = "50%";
-            musicPlayer.style.left = "50%";
-            musicPlayer.style.right = "auto";
-            musicPlayer.style.transform = "translate(-50%, 50%)";
-          }
+            // First remove any previous classes
+            musicPlayer.classList.remove("mobile-centered");
 
-          musicPlayer.classList.add("active");
+            // Choose positioning based on context
+            if (window.innerHeight < 600 || window.innerWidth < 380) {
+              // For very small screens or landscape mode, use bottom sheet style
+              musicPlayer.style.bottom = "-100%";
+              musicPlayer.style.left = "0";
+              musicPlayer.style.right = "0";
+              musicPlayer.style.width = "100%";
+              musicPlayer.style.transform = "none";
+              musicPlayer.style.borderRadius = "20px 20px 0 0";
 
-          // Add positioned class after a small delay to allow initial animation
-          if (window.matchMedia("(min-width: 769px)").matches) {
+              // Add active class first without the position change
+              musicPlayer.classList.add("active");
+
+              // Then after a small delay, change position for smoother animation
+              setTimeout(() => {
+                musicPlayer.style.bottom = "0";
+              }, 10);
+            } else {
+              // For normal sized phones, use centered modal style
+              musicPlayer.style.opacity = "0";
+              musicPlayer.style.visibility = "visible";
+              musicPlayer.classList.add("mobile-centered");
+
+              // Add active class
+              musicPlayer.classList.add("active");
+
+              // Ensure opacity transition works
+              setTimeout(() => {
+                musicPlayer.style.opacity = "1";
+              }, 10);
+            }
+          } else {
+            // Desktop positioning remains the same
+            musicPlayer.classList.add("active");
+
+            // Add positioned class after a small delay to allow initial animation
             setTimeout(() => {
               musicPlayer.classList.add("positioned");
             }, 500);
@@ -2072,27 +2127,42 @@
         }
 
         function hidePlayer() {
-          musicPlayer.classList.remove("active");
-          musicPlayer.classList.remove("positioned");
+          // For mobile, adjust animation based on current style
+          if (window.matchMedia("(max-width: 768px)").matches) {
+            if (musicPlayer.classList.contains("mobile-centered")) {
+              musicPlayer.style.opacity = "0";
+
+              setTimeout(() => {
+                musicPlayer.classList.remove("active");
+                musicPlayer.classList.remove("mobile-centered");
+                musicPlayer.style.visibility = "hidden";
+              }, 400);
+            } else {
+              // Bottom sheet style
+              musicPlayer.style.bottom = "-100%";
+
+              setTimeout(() => {
+                musicPlayer.classList.remove("active");
+              }, 400);
+            }
+          } else {
+            // Desktop behavior
+            musicPlayer.classList.remove("active");
+            musicPlayer.classList.remove("positioned");
+          }
+
           pauseTrack();
           stopAllTracks();
 
-          // Reset position when hidden
-          setTimeout(() => {
-            if (window.matchMedia("(min-width: 769px)").matches) {
-              // For desktop, reset to right side position
+          // Reset position when hidden - for desktop only
+          if (window.matchMedia("(min-width: 769px)").matches) {
+            setTimeout(() => {
               musicPlayer.style.right = "20px";
               musicPlayer.style.left = "";
               musicPlayer.style.top = "50%";
               musicPlayer.style.transform = "translate(0, -50%)";
-            } else {
-              // For mobile, ensure it's fully off-screen when hidden
-              musicPlayer.style.bottom = "-100%";
-              musicPlayer.style.left = "0";
-              musicPlayer.style.right = "0";
-              musicPlayer.style.transform = "none";
-            }
-          }, 100);
+            }, 400);
+          }
         }
 
         // Improved event handling for both mouse and touch events
@@ -2127,10 +2197,15 @@
           // Clamp values between 0 and 1
           percent = Math.max(0, Math.min(1, percent));
 
-          // Update all audio elements volume
+          // Update ALL audio elements volume
           bassIshqTrack.volume = percent;
           dilKiDuniyaTrack.volume = percent;
           moonTrack.volume = percent;
+
+          // Update old music tracks volume
+          oldMusicTracks.forEach((track) => {
+            track.element.volume = percent;
+          });
 
           // Update UI
           volumeLevel.style.width = `${percent * 100}%`;
@@ -2255,6 +2330,11 @@
           bassIshqTrack.volume = percent;
           dilKiDuniyaTrack.volume = percent;
           moonTrack.volume = percent;
+
+          // Update old music tracks volume
+          oldMusicTracks.forEach((track) => {
+            track.element.volume = percent;
+          });
 
           // Update the UI
           volumeLevel.style.width = `${percent * 100}%`;
