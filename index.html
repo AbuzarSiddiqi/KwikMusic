@@ -2084,8 +2084,30 @@
             // First remove any previous classes
             musicPlayer.classList.remove("mobile-centered");
 
-            // Choose positioning based on context
-            if (window.innerHeight < 600 || window.innerWidth < 380) {
+            // For smaller screens like iPhone X and SE, use centered modal style regardless of height
+            if (window.innerWidth <= 375) {
+              musicPlayer.style.opacity = "0";
+              musicPlayer.style.visibility = "visible";
+              musicPlayer.classList.add("mobile-centered");
+
+              // Position it in the center for smaller screens
+              musicPlayer.style.bottom = "50%";
+              musicPlayer.style.left = "50%";
+              musicPlayer.style.top = "auto";
+              musicPlayer.style.width = "85%";
+              musicPlayer.style.transform = "translate(-50%, 50%)";
+              musicPlayer.style.borderRadius = "20px";
+
+              // Add active class
+              musicPlayer.classList.add("active");
+
+              // Ensure opacity transition works
+              setTimeout(() => {
+                musicPlayer.style.opacity = "1";
+              }, 10);
+            }
+            // For larger screens or landscape orientation on small devices
+            else if (window.innerHeight < 600 || window.innerWidth < 380) {
               // For very small screens or landscape mode, use bottom sheet style
               musicPlayer.style.bottom = "-100%";
               musicPlayer.style.left = "0";
@@ -2535,11 +2557,30 @@
             if (window.matchMedia("(max-width: 768px)").matches) {
               // Mobile layout
               if (musicPlayer.classList.contains("active")) {
-                // If player is active on mobile, center it
-                musicPlayer.style.bottom = "50%";
-                musicPlayer.style.left = "50%";
-                musicPlayer.style.right = "auto";
-                musicPlayer.style.transform = "translate(-50%, 50%)";
+                // For smaller screens like iPhone X and SE, ensure centered positioning
+                if (window.innerWidth <= 375) {
+                  musicPlayer.classList.add("mobile-centered");
+                  musicPlayer.style.bottom = "50%";
+                  musicPlayer.style.left = "50%";
+                  musicPlayer.style.top = "auto";
+                  musicPlayer.style.width = "85%";
+                  musicPlayer.style.transform = "translate(-50%, 50%)";
+                  musicPlayer.style.borderRadius = "20px";
+                }
+                // For other mobile screens
+                else if (musicPlayer.classList.contains("mobile-centered")) {
+                  // If player is active on mobile with centered class, keep it centered
+                  musicPlayer.style.bottom = "50%";
+                  musicPlayer.style.left = "50%";
+                  musicPlayer.style.right = "auto";
+                  musicPlayer.style.transform = "translate(-50%, 50%)";
+                } else {
+                  // For bottom sheet style on larger mobile devices
+                  musicPlayer.style.bottom = "0";
+                  musicPlayer.style.left = "0";
+                  musicPlayer.style.right = "0";
+                  musicPlayer.style.transform = "none";
+                }
               } else {
                 // If player is inactive on mobile, keep it off-screen
                 musicPlayer.style.bottom = "-100%";
