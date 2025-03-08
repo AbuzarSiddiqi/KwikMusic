@@ -394,8 +394,8 @@
       .music-player {
         position: fixed;
         top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        right: 20px; /* Position on right side instead of center */
+        transform: translate(0, -50%); /* Only transform vertically */
         width: 320px;
         padding: 25px;
         background: rgba(255, 255, 255, 0.08);
@@ -418,7 +418,26 @@
       .music-player.active {
         opacity: 1;
         visibility: visible;
-        transform: translate(-50%, -50%);
+        transform: translate(0, -50%); /* Only transform vertically */
+      }
+
+      /* Add responsive positioning - right side for desktop, bottom for mobile */
+      @media screen and (max-width: 768px) {
+        .music-player {
+          top: auto;
+          right: 0;
+          bottom: -100%; /* Start off-screen at bottom */
+          left: 0;
+          width: 100%;
+          max-width: 100%;
+          border-radius: 20px 20px 0 0;
+          transform: none;
+        }
+
+        .music-player.active {
+          bottom: 0; /* Slide up from bottom */
+          transform: none;
+        }
       }
 
       /* Add draggable styling for desktop */
@@ -428,7 +447,7 @@
         }
 
         .music-player.active {
-          transform: translate(-50%, -50%); /* Initial position in center */
+          transform: translate(0, -50%); /* Default position on right side */
         }
 
         /* Only apply custom positioning after initial appearance */
@@ -983,6 +1002,7 @@
         /* Additional media query for short screens */
         .music-player {
           padding: 10px;
+          right: 10px; /* Adjust right positioning for small screens */
         }
 
         .player-artwork {
@@ -992,7 +1012,7 @@
         }
 
         .music-player.active {
-          bottom: 60px;
+          bottom: 0; /* For mobile */
         }
 
         .player-controls {
@@ -2023,11 +2043,11 @@
           }
           musicPlayer.classList.add("active");
 
-          // Add positioned class after a small delay to allow the initial centered animation
+          // Add positioned class after a small delay to allow initial animation
           if (window.matchMedia("(min-width: 769px)").matches) {
             setTimeout(() => {
               musicPlayer.classList.add("positioned");
-            }, 50);
+            }, 500);
           }
         }
 
@@ -2039,8 +2059,18 @@
 
           // Reset position when hidden
           setTimeout(() => {
-            musicPlayer.style.left = "";
-            musicPlayer.style.top = "";
+            if (window.matchMedia("(min-width: 769px)").matches) {
+              // For desktop, reset to right side position
+              musicPlayer.style.right = "20px";
+              musicPlayer.style.left = "";
+              musicPlayer.style.top = "50%";
+              musicPlayer.style.transform = "translate(0, -50%)";
+            } else {
+              // For mobile, reset to bottom position
+              musicPlayer.style.left = "";
+              musicPlayer.style.top = "";
+              musicPlayer.style.bottom = "-100%";
+            }
           }, 100);
         }
 
@@ -2400,18 +2430,40 @@
 
           // Adjust for window resize
           window.addEventListener("resize", () => {
-            // Only reset position if on mobile
+            // Reset position appropriately based on screen size
             if (window.matchMedia("(max-width: 768px)").matches) {
+              // Mobile layout
+              musicPlayer.style.right = "";
               musicPlayer.style.left = "";
               musicPlayer.style.top = "";
+              musicPlayer.style.transform = "none";
+            } else {
+              // Desktop layout - reset to right side
+              if (!isDragging && musicPlayer.classList.contains("active") && 
+                  !musicPlayer.classList.contains("positioned")) {
+                musicPlayer.style.right = "20px";
+                musicPlayer.style.left = "";
+                musicPlayer.style.top = "50%";
+                musicPlayer.style.transform = "translate(0, -50%)";
+              }
             }
           });
 
           // Return public methods if needed
           return {
             reset: () => {
-              musicPlayer.style.left = "";
-              musicPlayer.style.top = "";
+              if (window.matchMedia("(min-width: 769px)").matches) {
+                // For desktop, reset to right side
+                musicPlayer.style.right = "20px";
+                musicPlayer.style.left = "";
+                musicPlayer.style.top = "50%";
+                musicPlayer.style.transform = "translate(0, -50%)";
+              } else {
+                // For mobile, reset bottom position
+                musicPlayer.style.left = "";
+                musicPlayer.style.right = "";
+                musicPlayer.style.top = "";
+              }
             },
           };
         })();
