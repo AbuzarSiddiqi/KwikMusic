@@ -1220,6 +1220,28 @@
           margin: 0 5px;
         }
       }
+
+      /* Make volume sliders more touch-friendly on mobile */
+      @media screen and (max-width: 768px) {
+        .rain-slider,
+        .volume-slider {
+          height: 20px; /* Increased touch target area */
+          position: relative;
+        }
+
+        .rain-level,
+        .volume-level {
+          height: 6px; /* Actual visible slider */
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
+        /* Visual feedback for active touch */
+        .slider-active {
+          box-shadow: 0 0 10px rgba(255, 200, 0, 0.5);
+        }
+      }
     </style>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Dancing+Script:wght@500;700&display=swap"
@@ -1649,8 +1671,10 @@
           soundEnabled = !soundEnabled;
         });
 
-        // Rain volume control functions
+        // Improved rain volume control with better mobile support
         function handleRainVolumeInteraction(e) {
+          e.preventDefault(); // Prevent scrolling on mobile
+
           // Get correct event position for both mouse and touch
           const clientX = e.clientX || (e.touches && e.touches[0].clientX);
           if (!clientX) return;
@@ -1666,6 +1690,9 @@
 
           // Update UI
           rainVolumeLevel.style.width = `${percent * 100}%`;
+
+          // Add visual feedback
+          rainVolumeSlider.classList.add("slider-active");
         }
 
         // Mouse events for rain volume
@@ -1679,28 +1706,37 @@
                 "mousemove",
                 handleRainVolumeInteraction
               );
+              rainVolumeSlider.classList.remove("slider-active");
             },
             { once: true }
           );
         });
 
-        // Touch events for rain volume on mobile
-        rainVolumeSlider.addEventListener("touchstart", (e) => {
-          handleRainVolumeInteraction(e);
-          document.addEventListener("touchmove", handleRainVolumeInteraction);
-          document.addEventListener(
-            "touchend",
-            () => {
-              document.removeEventListener(
-                "touchmove",
-                handleRainVolumeInteraction
-              );
-            },
-            { once: true }
-          );
-        });
+        // Enhanced touch events for rain volume on mobile
+        rainVolumeSlider.addEventListener(
+          "touchstart",
+          (e) => {
+            handleRainVolumeInteraction(e);
+            document.addEventListener(
+              "touchmove",
+              handleRainVolumeInteraction,
+              { passive: false }
+            );
+            document.addEventListener(
+              "touchend",
+              () => {
+                document.removeEventListener(
+                  "touchmove",
+                  handleRainVolumeInteraction
+                );
+                rainVolumeSlider.classList.remove("slider-active");
+              },
+              { once: true }
+            );
+          },
+          { passive: false }
+        ); // passive: false allows preventDefault to work
 
-        // Simple click event for rain volume
         rainVolumeSlider.addEventListener("click", (e) => {
           handleRainVolumeInteraction(e);
         });
@@ -2189,6 +2225,8 @@
 
         // Improved event handling for both mouse and touch events
         function handleProgressBarInteraction(e) {
+          e.preventDefault(); // Prevent scrolling on mobile
+
           if (!currentTrack) return;
 
           // Get correct event position for both mouse and touch
@@ -2206,9 +2244,14 @@
           // Update UI
           progressCurrent.style.width = `${percent * 100}%`;
           progressHandle.style.left = `${percent * 100}%`;
+
+          // Update time display immediately for better feedback
+          currentTimeDisplay.textContent = formatTime(currentTrack.currentTime);
         }
 
         function handleVolumeSliderInteraction(e) {
+          e.preventDefault(); // Prevent scrolling on mobile
+
           // Get correct event position for both mouse and touch
           const clientX = e.clientX || (e.touches && e.touches[0].clientX);
           if (!clientX) return;
@@ -2231,6 +2274,9 @@
 
           // Update UI
           volumeLevel.style.width = `${percent * 100}%`;
+
+          // Add visual feedback
+          volumeSlider.classList.add("slider-active");
         }
 
         // Handle progress bar interactions
@@ -2256,28 +2302,36 @@
         });
 
         // Touch events for mobile
-        progressBar.addEventListener("touchstart", (e) => {
-          isDragging = true;
-          handleProgressBarInteraction(e);
-          document.addEventListener("touchmove", handleProgressBarInteraction);
-          document.addEventListener(
-            "touchend",
-            () => {
-              isDragging = false;
-              document.removeEventListener(
-                "touchmove",
-                handleProgressBarInteraction
-              );
-              // Resume progress updates
-              if (currentTrack && !currentTrack.paused) {
-                requestAnimationFrame(updateProgress);
-              }
-            },
-            { once: true }
-          );
-        });
+        progressBar.addEventListener(
+          "touchstart",
+          (e) => {
+            isDragging = true;
+            handleProgressBarInteraction(e);
+            document.addEventListener(
+              "touchmove",
+              handleProgressBarInteraction,
+              { passive: false }
+            );
+            document.addEventListener(
+              "touchend",
+              () => {
+                isDragging = false;
+                document.removeEventListener(
+                  "touchmove",
+                  handleProgressBarInteraction
+                );
+                // Resume progress updates
+                if (currentTrack && !currentTrack.paused) {
+                  requestAnimationFrame(updateProgress);
+                }
+              },
+              { once: true }
+            );
+          },
+          { passive: false }
+        ); // passive: false allows preventDefault to work
 
-        // Volume slider events
+        // Volume slider mouse events
         volumeSlider.addEventListener("mousedown", (e) => {
           handleVolumeSliderInteraction(e);
           document.addEventListener("mousemove", handleVolumeSliderInteraction);
@@ -2288,25 +2342,39 @@
                 "mousemove",
                 handleVolumeSliderInteraction
               );
+              volumeSlider.classList.remove("slider-active");
             },
             { once: true }
           );
         });
 
-        // Touch events for volume
-        volumeSlider.addEventListener("touchstart", (e) => {
+        // Enhanced touch events for volume slider
+        volumeSlider.addEventListener(
+          "touchstart",
+          (e) => {
+            handleVolumeSliderInteraction(e);
+            document.addEventListener(
+              "touchmove",
+              handleVolumeSliderInteraction,
+              { passive: false }
+            );
+            document.addEventListener(
+              "touchend",
+              () => {
+                document.removeEventListener(
+                  "touchmove",
+                  handleVolumeSliderInteraction
+                );
+                volumeSlider.classList.remove("slider-active");
+              },
+              { once: true }
+            );
+          },
+          { passive: false }
+        ); // passive: false allows preventDefault to work
+
+        volumeSlider.addEventListener("click", (e) => {
           handleVolumeSliderInteraction(e);
-          document.addEventListener("touchmove", handleVolumeSliderInteraction);
-          document.addEventListener(
-            "touchend",
-            () => {
-              document.removeEventListener(
-                "touchmove",
-                handleVolumeSliderInteraction
-              );
-            },
-            { once: true }
-          );
         });
 
         // Event Listeners for player controls
