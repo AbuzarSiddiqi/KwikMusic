@@ -1220,59 +1220,6 @@
           margin: 0 5px;
         }
       }
-
-      /* Add loading indicator styles */
-      .loading-indicator {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 40px;
-        height: 40px;
-        border: 3px solid rgba(255, 255, 255, 0.2);
-        border-top: 3px solid #ffd166;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        z-index: 5;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: translate(-50%, -50%) rotate(0deg);
-        }
-        100% {
-          transform: translate(-50%, -50%) rotate(360deg);
-        }
-      }
-
-      .loading-text {
-        position: absolute;
-        top: calc(50% + 25px);
-        left: 50%;
-        transform: translateX(-50%);
-        color: #ffd166;
-        font-size: 0.8rem;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        white-space: nowrap;
-      }
-
-      .quality-switch {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.5);
-        border-radius: 12px;
-        padding: 4px 8px;
-        font-size: 0.7rem;
-        color: #fff;
-        cursor: pointer;
-        opacity: 0.7;
-        transition: opacity 0.3s;
-      }
-
-      .quality-switch:hover {
-        opacity: 1;
-      }
     </style>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Dancing+Script:wght@500;700&display=swap"
@@ -1284,18 +1231,18 @@
     <div class="rain-container" id="rainContainer"></div>
 
     <!-- Audio elements -->
-    <audio id="rainSound" loop preload="none">
+    <audio id="rainSound" loop preload="auto">
       <source src="music/Rain.m4a" type="audio/mp4" />
       Your browser does not support the audio element.
     </audio>
 
     <!-- My Music audio tracks -->
-    <audio id="bassIshqTrack" preload="metadata">
+    <audio id="bassIshqTrack" preload="auto">
       <source src="music/BassIshq.mp3" type="audio/mpeg" />
       Your browser does not support the audio element.
     </audio>
 
-    <audio id="dilKiDuniyaTrack" preload="metadata">
+    <audio id="dilKiDuniyaTrack" preload="auto">
       <source
         src="music/Dil Ki Duniya Ujaad Baithi Hai.mp3"
         type="audio/mpeg"
@@ -1303,7 +1250,7 @@
       Your browser does not support the audio element.
     </audio>
 
-    <audio id="moonTrack" preload="metadata">
+    <audio id="moonTrack" preload="auto">
       <source src="music/Moon.mp3" type="audio/mpeg" />
       Your browser does not support the audio element.
     </audio>
@@ -1410,17 +1357,7 @@
     <div class="music-player" id="musicPlayer">
       <div class="drag-handle" id="dragHandle"></div>
       <button class="close-player" id="closePlayer">×</button>
-      <div class="player-artwork" id="playerArtwork">
-        <div
-          class="loading-indicator"
-          id="loadingIndicator"
-          style="display: none"
-        ></div>
-        <div class="loading-text" id="loadingText" style="display: none">
-          Loading...
-        </div>
-        <div class="quality-switch" id="qualitySwitch">HQ</div>
-      </div>
+      <div class="player-artwork" id="playerArtwork"></div>
       <div class="player-song-info">
         <div class="player-title" id="playerTitle">Select a track</div>
       </div>
@@ -1606,7 +1543,7 @@
           // Reset visibility state of player to ensure it appears even after being closed
           musicPlayer.classList.remove("active");
 
-          // Show player and play the track with progressive loading
+          // Show player and play the track
           showPlayer();
           playTrack();
         }
@@ -2067,14 +2004,6 @@
 
         function switchTrack(index) {
           if (index >= 0 && index < tracks.length) {
-            // Cancel any current loading
-            if (currentLoadingTrack) {
-              currentLoadingTrack.preload = "none";
-              currentLoadingTrack = null;
-              loadingIndicator.style.display = "none";
-              loadingText.style.display = "none";
-            }
-
             stopAllTracks();
             currentTrackIndex = index;
             currentTrack = tracks[currentTrackIndex].element;
@@ -2109,40 +2038,18 @@
               showPlayer();
             }
 
-            // Now load and play the track with visual feedback
             playTrack();
           }
         }
 
         function playTrack() {
           if (currentTrack) {
-            // Show loading indicator and start loading audio
-            progressiveLoadAudio(currentTrack, (success) => {
-              if (success && !currentTrack.paused) {
-                // Already playing (or play started during loading)
-                return;
-              }
+            currentTrack
+              .play()
+              .catch((e) => console.log("Audio play failed:", e));
+            playPauseBtn.innerHTML = "⏸";
 
-              if (success) {
-                currentTrack
-                  .play()
-                  .then(() => {
-                    playPauseBtn.innerHTML = "⏸";
-                    // Start progress tracking
-                    requestAnimationFrame(updateProgress);
-                  })
-                  .catch((e) => {
-                    console.log("Audio play failed:", e);
-                    playPauseBtn.innerHTML = "▶";
-                  });
-              } else {
-                playPauseBtn.innerHTML = "▶";
-              }
-            });
-
-            playPauseBtn.innerHTML = "⏸"; // Show pause while loading
-
-            // Update the total duration display if we already have metadata
+            // Update the total duration display
             if (currentTrack.readyState >= 1) {
               totalTimeDisplay.textContent = formatTime(currentTrack.duration);
             } else {
@@ -2152,6 +2059,9 @@
                 );
               });
             }
+
+            // Start progress tracking
+            requestAnimationFrame(updateProgress);
           }
         }
 
@@ -2402,14 +2312,6 @@
         // Event Listeners for player controls
         playPauseBtn.addEventListener("click", () => {
           if (!currentTrack) return;
-
-          // If we're currently loading, don't do anything
-          if (
-            currentLoadingTrack === currentTrack &&
-            currentTrack.readyState < 3
-          ) {
-            return;
-          }
 
           if (currentTrack.paused) {
             playTrack();
@@ -2743,242 +2645,6 @@
             musicPlayer.offsetHeight
           );
         };
-
-        // Audio loading optimization
-        const lowBandwidthThreshold = 1000; // 1 Mbps
-        let isLowQualityMode = false;
-        let currentLoadingTrack = null;
-        const loadingIndicator = document.getElementById("loadingIndicator");
-        const loadingText = document.getElementById("loadingText");
-        const qualitySwitch = document.getElementById("qualitySwitch");
-
-        // Detect connection speed
-        function detectConnectionSpeed() {
-          // Use the Network Information API if available
-          if (navigator.connection) {
-            const connection = navigator.connection;
-
-            // Low bandwidth conditions
-            if (
-              connection.downlink < 1 ||
-              connection.effectiveType === "slow-2g" ||
-              connection.effectiveType === "2g" ||
-              connection.saveData
-            ) {
-              enableLowQualityMode();
-            }
-
-            // Listen for connection changes
-            connection.addEventListener("change", function () {
-              if (
-                connection.downlink < 1 ||
-                connection.effectiveType === "slow-2g" ||
-                connection.effectiveType === "2g" ||
-                connection.saveData
-              ) {
-                enableLowQualityMode();
-              } else if (
-                isLowQualityMode &&
-                connection.downlink > lowBandwidthThreshold
-              ) {
-                disableLowQualityMode();
-              }
-            });
-          } else {
-            // Fallback when Network Information API is not available
-            // Perform a small bandwidth test by loading a small image
-            const startTime = Date.now();
-            const testImage = new Image();
-            testImage.onload = function () {
-              const endTime = Date.now();
-              const duration = endTime - startTime;
-
-              // If it took more than 200ms to load a small image, assume low bandwidth
-              if (duration > 200) {
-                enableLowQualityMode();
-              }
-            };
-
-            // Use a small test image (1x1 pixel)
-            testImage.src =
-              "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" +
-              "?n=" +
-              Math.random();
-          }
-        }
-
-        function enableLowQualityMode() {
-          isLowQualityMode = true;
-          qualitySwitch.textContent = "LQ";
-          qualitySwitch.style.backgroundColor = "rgba(255, 100, 100, 0.5)";
-          // When switching to low quality, reset all preloads to "none"
-          document.querySelectorAll("audio").forEach((audio) => {
-            audio.preload = "none";
-          });
-        }
-
-        function disableLowQualityMode() {
-          isLowQualityMode = false;
-          qualitySwitch.textContent = "HQ";
-          qualitySwitch.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-          // Main tracks can use metadata preloading in HQ mode
-          bassIshqTrack.preload = "metadata";
-          dilKiDuniyaTrack.preload = "metadata";
-          moonTrack.preload = "metadata";
-        }
-
-        // Call this once on page load
-        detectConnectionSpeed();
-
-        // Toggle quality manually
-        qualitySwitch.addEventListener("click", () => {
-          if (isLowQualityMode) {
-            disableLowQualityMode();
-          } else {
-            enableLowQualityMode();
-          }
-        });
-
-        // Progressive loading function
-        function progressiveLoadAudio(audioElement, callback) {
-          // Skip loading if already loaded
-          if (audioElement.readyState >= 3) {
-            if (callback) callback(true);
-            return;
-          }
-
-          // Show loading indicator
-          currentLoadingTrack = audioElement;
-          loadingIndicator.style.display = "block";
-          loadingText.style.display = "block";
-
-          // Start loading
-          if (isLowQualityMode) {
-            audioElement.preload = "metadata";
-          } else {
-            audioElement.preload = "auto";
-          }
-
-          // Load progress tracking
-          let lastLoadedPercent = 0;
-
-          function updateLoadProgress() {
-            if (!audioElement.buffered || !audioElement.buffered.length) {
-              loadingText.textContent = "Preparing...";
-              return;
-            }
-
-            const bufferedEnd = audioElement.buffered.end(
-              audioElement.buffered.length - 1
-            );
-            const duration = audioElement.duration || 1;
-            const loadedPercent = Math.min(
-              Math.round((bufferedEnd / duration) * 100),
-              100
-            );
-
-            if (loadedPercent !== lastLoadedPercent) {
-              loadingText.textContent = `Loading: ${loadedPercent}%`;
-              lastLoadedPercent = loadedPercent;
-            }
-
-            if (loadedPercent < 100 && currentLoadingTrack === audioElement) {
-              setTimeout(updateLoadProgress, 500);
-            }
-          }
-
-          // Set up loading events
-          const loadHandler = () => {
-            // Hide loading indicator
-            if (currentLoadingTrack === audioElement) {
-              loadingIndicator.style.display = "none";
-              loadingText.style.display = "none";
-              currentLoadingTrack = null;
-            }
-            audioElement.removeEventListener("canplaythrough", loadHandler);
-            if (callback) callback(true);
-          };
-
-          const errorHandler = () => {
-            // Hide loading indicator but show error
-            if (currentLoadingTrack === audioElement) {
-              loadingIndicator.style.display = "none";
-              loadingText.textContent = "Error loading track";
-              setTimeout(() => {
-                if (currentLoadingTrack === audioElement) {
-                  loadingText.style.display = "none";
-                  currentLoadingTrack = null;
-                }
-              }, 3000);
-            }
-            audioElement.removeEventListener("error", errorHandler);
-            if (callback) callback(false);
-          };
-
-          audioElement.addEventListener("canplaythrough", loadHandler);
-          audioElement.addEventListener("error", errorHandler);
-
-          // Start progress tracking
-          updateLoadProgress();
-
-          // Force load by setting the current time
-          try {
-            audioElement.currentTime = 0;
-          } catch (e) {
-            console.log("Cannot set currentTime before audio is loaded");
-          }
-
-          // For Safari which doesn't always trigger canplaythrough
-          setTimeout(() => {
-            if (
-              audioElement.readyState >= 3 &&
-              currentLoadingTrack === audioElement
-            ) {
-              loadHandler();
-            }
-          }, 5000);
-        }
-
-        // Consider network conditions when preloading the next track
-        function preloadNextTrack() {
-          // Only preload in high-quality mode and when network is good
-          if (isLowQualityMode) return;
-
-          let nextIndex = currentTrackIndex + 1;
-          if (nextIndex >= tracks.length) nextIndex = 0;
-
-          const nextTrack = tracks[nextIndex].element;
-
-          // Set to metadata to start loading metadata at least
-          nextTrack.preload = "metadata";
-        }
-
-        // Add preloading to track end handlers
-        bassIshqTrack.addEventListener("ended", () => {
-          let nextIndex = currentTrackIndex + 1;
-          if (nextIndex >= tracks.length) nextIndex = 0;
-          switchTrack(nextIndex);
-        });
-
-        bassIshqTrack.addEventListener("timeupdate", function () {
-          // When we're 80% through the song, preload the next one
-          if (this.currentTime > 0.8 * this.duration) {
-            preloadNextTrack();
-          }
-        });
-
-        // Apply the same pattern to other tracks
-        dilKiDuniyaTrack.addEventListener("timeupdate", function () {
-          if (this.currentTime > 0.8 * this.duration) {
-            preloadNextTrack();
-          }
-        });
-
-        moonTrack.addEventListener("timeupdate", function () {
-          if (this.currentTime > 0.8 * this.duration) {
-            preloadNextTrack();
-          }
-        });
       });
     </script>
   </body>
