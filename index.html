@@ -1220,6 +1220,147 @@
           margin: 0 5px;
         }
       }
+
+      /* Shuffle Button Styles */
+      .player-btn.shuffle {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 28px;
+        height: 28px;
+        z-index: 5;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+        overflow: visible;
+        margin: 0;
+        font-size: 0.8rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .player-btn.shuffle::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        border-radius: 50%;
+        padding: 1px;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.5),
+          rgba(255, 255, 255, 0.2),
+          rgba(255, 255, 255, 0),
+          rgba(255, 255, 255, 0.2)
+        );
+        -webkit-mask: linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+
+      .player-btn.shuffle::after {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 70% 70%,
+          rgba(255, 200, 0, 0.4),
+          transparent 50%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      .player-btn.shuffle:hover::after {
+        opacity: 1;
+      }
+
+      .player-btn.shuffle.active {
+        background: rgba(255, 200, 0, 0.25);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3),
+          0 0 15px rgba(255, 200, 0, 0.4),
+          inset 0 0 0 1px rgba(255, 230, 100, 0.3);
+      }
+
+      .player-btn.shuffle.active::before {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 230, 100, 0.8),
+          rgba(255, 200, 0, 0.3),
+          rgba(255, 200, 0, 0),
+          rgba(255, 230, 100, 0.4)
+        );
+      }
+
+      /* Add breathing glow effect for active shuffle */
+      @keyframes breatheGlow {
+        0%,
+        100% {
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2),
+            0 0 10px rgba(255, 200, 0, 0.2),
+            inset 0 0 0 1px rgba(255, 230, 100, 0.3);
+        }
+        50% {
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3),
+            0 0 20px rgba(255, 200, 0, 0.4),
+            inset 0 0 0 1px rgba(255, 230, 100, 0.5);
+        }
+      }
+
+      .player-btn.shuffle.active {
+        animation: breatheGlow 3s infinite ease-in-out;
+      }
+
+      /* Update shuffle button styles to position it in the bottom right corner of artwork */
+      .player-btn.shuffle {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 28px;
+        height: 28px;
+        z-index: 5;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+        overflow: visible;
+        margin: 0;
+        font-size: 0.8rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Adjust hover effect for the smaller button */
+      .player-btn.shuffle:hover {
+        transform: translateY(-2px) scale(1.05);
+      }
+
+      .player-btn.shuffle:active {
+        transform: translateY(0) scale(0.95);
+      }
+
+      /* Adjust media queries for smaller screens */
+      @media screen and (max-width: 480px) {
+        .player-btn.shuffle {
+          width: 24px;
+          height: 24px;
+          font-size: 0.7rem;
+          bottom: 8px;
+          right: 8px;
+        }
+      }
     </style>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Dancing+Script:wght@500;700&display=swap"
@@ -1357,7 +1498,11 @@
     <div class="music-player" id="musicPlayer">
       <div class="drag-handle" id="dragHandle"></div>
       <button class="close-player" id="closePlayer">×</button>
-      <div class="player-artwork" id="playerArtwork"></div>
+      <div class="player-artwork" id="playerArtwork">
+        <button class="player-btn shuffle" id="shuffleBtn" title="Shuffle">
+          ထ
+        </button>
+      </div>
       <div class="player-song-info">
         <div class="player-title" id="playerTitle">Select a track</div>
       </div>
@@ -1485,6 +1630,9 @@
         const oldMusicGrid = document.getElementById("oldMusicGrid");
         generateOldMusicGrid();
 
+        // Track the current active category
+        let activeCategory = "myMusic";
+
         // Function to generate the old music grid
         function generateOldMusicGrid() {
           oldMusicGrid.innerHTML = ""; // Clear existing content
@@ -1514,46 +1662,21 @@
           });
         }
 
-        // Function to handle playing old music
-        function playOldMusic(track) {
-          stopAllTracks();
-
-          // Remove playing class from all items
-          const musicItems = document.querySelectorAll(".music-item");
-          musicItems.forEach((item) => item.classList.remove("playing"));
-
-          // Add playing class to the clicked item
-          const clickedItem = document.querySelector(
-            `.music-item[data-track-id="${track.id}"]`
-          );
-          if (clickedItem) clickedItem.classList.add("playing");
-
-          currentTrack = track.element;
-
-          // Find the track in allTracks to get the proper index
-          currentTrackIndex = allTracks.findIndex(
-            (t) => t.element === track.element
-          );
-
-          playerTitle.textContent = track.title;
-
-          // Set a default artwork for old music
-          playerArtwork.style.backgroundImage = `url('Images/oldmusic.jpg')`;
-
-          // Reset visibility state of player to ensure it appears even after being closed
-          musicPlayer.classList.remove("active");
-
-          // Show player and play the track
-          showPlayer();
-          playTrack();
-        }
-
         // Toggle between music categories
         myMusicBtn.addEventListener("click", () => {
           myMusicBtn.classList.add("active");
           likedMusicBtn.classList.remove("active");
           myMusicCategory.classList.add("active");
           likedMusicCategory.classList.remove("active");
+          activeCategory = "myMusic";
+
+          // If music is currently playing from liked category, stop it
+          if (currentTrack && isLikedMusicTrack(currentTrack)) {
+            stopAllTracks();
+            currentTrack = null;
+            currentTrackIndex = -1;
+            hidePlayer();
+          }
         });
 
         likedMusicBtn.addEventListener("click", () => {
@@ -1561,7 +1684,29 @@
           myMusicBtn.classList.remove("active");
           likedMusicCategory.classList.add("active");
           myMusicCategory.classList.remove("active");
+          activeCategory = "likedMusic";
+
+          // If music is currently playing from my music category, stop it
+          if (currentTrack && isMyMusicTrack(currentTrack)) {
+            stopAllTracks();
+            currentTrack = null;
+            currentTrackIndex = -1;
+            hidePlayer();
+          }
         });
+
+        // Helper functions to determine track category
+        function isMyMusicTrack(track) {
+          return (
+            track === bassIshqTrack ||
+            track === dilKiDuniyaTrack ||
+            track === moonTrack
+          );
+        }
+
+        function isLikedMusicTrack(track) {
+          return oldMusicTracks.some((oldTrack) => oldTrack.element === track);
+        }
 
         // Set initial volume
         rainSound.volume = 0.4;
@@ -1937,11 +2082,12 @@
         const playPauseBtn = document.getElementById("playPauseBtn");
         const prevBtn = document.getElementById("prevBtn");
         const nextBtn = document.getElementById("nextBtn");
+        const shuffleBtn = document.getElementById("shuffleBtn");
         const volumeSlider = document.getElementById("volumeSlider");
         const volumeLevel = document.getElementById("volumeLevel");
         const closePlayerBtn = document.getElementById("closePlayer");
 
-        // Track list for navigation with album artwork - Combine both my music and old music
+        // Track list for navigation with album artwork - Separate by category
         const myMusicTracks = [
           {
             element: bassIshqTrack,
@@ -1963,22 +2109,25 @@
           },
         ];
 
-        // Combine all tracks for navigation
-        const allTracks = [
-          ...myMusicTracks,
-          ...oldMusicTracks.map((track) => ({
-            element: track.element,
-            title: track.title,
-            button: null, // No button for old tracks
-            artwork: "Images/oldmusic.jpg", // Default artwork for old music
-          })),
-        ];
+        // Liked music tracks
+        const likedTracks = oldMusicTracks.map((track) => ({
+          element: track.element,
+          title: track.title,
+          button: null, // No button for old tracks
+          artwork: "Images/oldmusic.jpg", // Default artwork for old music
+        }));
 
-        // Update the tracks reference in the existing code
-        const tracks = allTracks;
+        // Shuffle state
+        let shuffleEnabled = false;
+        let shuffleOrder = [];
 
         let currentTrackIndex = -1;
         let isDragging = false;
+
+        // Function to get current category tracks
+        function getCurrentCategoryTracks() {
+          return activeCategory === "myMusic" ? myMusicTracks : likedTracks;
+        }
 
         function formatTime(seconds) {
           const minutes = Math.floor(seconds / 60);
@@ -2003,29 +2152,36 @@
         }
 
         function switchTrack(index) {
-          if (index >= 0 && index < tracks.length) {
+          const currentTracks = getCurrentCategoryTracks();
+
+          if (index >= 0 && index < currentTracks.length) {
             stopAllTracks();
             currentTrackIndex = index;
-            currentTrack = tracks[currentTrackIndex].element;
-            playerTitle.textContent = tracks[currentTrackIndex].title;
+            currentTrack = currentTracks[currentTrackIndex].element;
+            playerTitle.textContent = currentTracks[currentTrackIndex].title;
 
             // Update the artwork
-            playerArtwork.style.backgroundImage = `url(${tracks[currentTrackIndex].artwork})`;
+            playerArtwork.style.backgroundImage = `url(${currentTracks[currentTrackIndex].artwork})`;
 
             // Highlight the corresponding button if it exists
-            if (tracks[currentTrackIndex].button) {
+            if (activeCategory === "myMusic") {
               myMusicTracks.forEach((track) => {
                 if (track.button) track.button.classList.remove("active-track");
               });
-              tracks[currentTrackIndex].button.classList.add("active-track");
-            } else {
-              // For old music, highlight the item in the grid
-              const oldMusicIndex = index - myMusicTracks.length;
-              if (oldMusicIndex >= 0) {
-                const trackId = oldMusicTracks[oldMusicIndex].id;
-                const musicItems = document.querySelectorAll(".music-item");
-                musicItems.forEach((item) => item.classList.remove("playing"));
 
+              if (currentTracks[currentTrackIndex].button) {
+                currentTracks[currentTrackIndex].button.classList.add(
+                  "active-track"
+                );
+              }
+            } else {
+              // For liked music, highlight the item in the grid
+              const musicItems = document.querySelectorAll(".music-item");
+              musicItems.forEach((item) => item.classList.remove("playing"));
+
+              // Find the corresponding old music track
+              if (index >= 0 && index < oldMusicTracks.length) {
+                const trackId = oldMusicTracks[index].id;
                 const item = document.querySelector(
                   `.music-item[data-track-id="${trackId}"]`
                 );
@@ -2039,6 +2195,97 @@
             }
 
             playTrack();
+          }
+        }
+
+        function getNextTrackIndex() {
+          const currentTracks = getCurrentCategoryTracks();
+
+          if (shuffleEnabled && shuffleOrder.length > 0) {
+            // Get the next track from shuffle order
+            const currentShuffleIndex = shuffleOrder.findIndex(
+              (idx) => idx === currentTrackIndex
+            );
+            if (
+              currentShuffleIndex !== -1 &&
+              currentShuffleIndex < shuffleOrder.length - 1
+            ) {
+              return shuffleOrder[currentShuffleIndex + 1];
+            } else {
+              // Reshuffle if we're at the end
+              generateShuffleOrder();
+              return shuffleOrder[0];
+            }
+          } else {
+            // Normal sequential next
+            let nextIndex = currentTrackIndex + 1;
+            if (nextIndex >= currentTracks.length) nextIndex = 0;
+            return nextIndex;
+          }
+        }
+
+        function getPrevTrackIndex() {
+          const currentTracks = getCurrentCategoryTracks();
+
+          if (shuffleEnabled && shuffleOrder.length > 0) {
+            // Get the previous track from shuffle order
+            const currentShuffleIndex = shuffleOrder.findIndex(
+              (idx) => idx === currentTrackIndex
+            );
+            if (currentShuffleIndex > 0) {
+              return shuffleOrder[currentShuffleIndex - 1];
+            } else {
+              // Go to the end of the shuffle list
+              return shuffleOrder[shuffleOrder.length - 1];
+            }
+          } else {
+            // Normal sequential prev
+            let prevIndex = currentTrackIndex - 1;
+            if (prevIndex < 0) prevIndex = currentTracks.length - 1;
+            return prevIndex;
+          }
+        }
+
+        function generateShuffleOrder() {
+          const currentTracks = getCurrentCategoryTracks();
+          const indices = Array.from(
+            { length: currentTracks.length },
+            (_, i) => i
+          );
+
+          // Fisher-Yates shuffle algorithm
+          for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+          }
+
+          shuffleOrder = indices;
+
+          // Ensure the current track is not the first in the shuffle order
+          if (
+            currentTrackIndex !== -1 &&
+            shuffleOrder[0] === currentTrackIndex &&
+            shuffleOrder.length > 1
+          ) {
+            // Swap the first track with another one
+            const swapIndex =
+              Math.floor(Math.random() * (shuffleOrder.length - 1)) + 1;
+            [shuffleOrder[0], shuffleOrder[swapIndex]] = [
+              shuffleOrder[swapIndex],
+              shuffleOrder[0],
+            ];
+          }
+        }
+
+        function toggleShuffle() {
+          shuffleEnabled = !shuffleEnabled;
+
+          if (shuffleEnabled) {
+            shuffleBtn.classList.add("active");
+            generateShuffleOrder();
+          } else {
+            shuffleBtn.classList.remove("active");
+            shuffleOrder = [];
           }
         }
 
@@ -2171,6 +2418,10 @@
             // Desktop behavior
             musicPlayer.classList.remove("active");
             musicPlayer.classList.remove("positioned");
+
+            // Reset these properties immediately to ensure proper drag on next open
+            musicPlayer.style.left = "";
+            musicPlayer.style.top = "";
           }
 
           pauseTrack();
@@ -2321,16 +2572,16 @@
         });
 
         prevBtn.addEventListener("click", () => {
-          let prevIndex = currentTrackIndex - 1;
-          if (prevIndex < 0) prevIndex = tracks.length - 1;
+          const prevIndex = getPrevTrackIndex();
           switchTrack(prevIndex);
         });
 
         nextBtn.addEventListener("click", () => {
-          let nextIndex = currentTrackIndex + 1;
-          if (nextIndex >= tracks.length) nextIndex = 0;
+          const nextIndex = getNextTrackIndex();
           switchTrack(nextIndex);
         });
+
+        shuffleBtn.addEventListener("click", toggleShuffle);
 
         progressBar.addEventListener("click", (e) => {
           if (!currentTrack) return;
@@ -2367,17 +2618,23 @@
         // Modify existing music button click handlers to use the player
         homeBtn.addEventListener("click", (e) => {
           e.preventDefault();
-          switchTrack(0);
+          if (activeCategory === "myMusic") {
+            switchTrack(0);
+          }
         });
 
         workBtn.addEventListener("click", (e) => {
           e.preventDefault();
-          switchTrack(1);
+          if (activeCategory === "myMusic") {
+            switchTrack(1);
+          }
         });
 
         aboutBtn.addEventListener("click", (e) => {
           e.preventDefault();
-          switchTrack(2);
+          if (activeCategory === "myMusic") {
+            switchTrack(2);
+          }
         });
 
         contactBtn.addEventListener("click", (e) => {
@@ -2388,31 +2645,33 @@
 
         // Event handlers for when tracks end
         bassIshqTrack.addEventListener("ended", () => {
-          // Auto play next track
-          let nextIndex = currentTrackIndex + 1;
-          if (nextIndex >= tracks.length) nextIndex = 0;
-          switchTrack(nextIndex);
+          if (activeCategory === "myMusic") {
+            const nextIndex = getNextTrackIndex();
+            switchTrack(nextIndex);
+          }
         });
 
         dilKiDuniyaTrack.addEventListener("ended", () => {
-          let nextIndex = currentTrackIndex + 1;
-          if (nextIndex >= tracks.length) nextIndex = 0;
-          switchTrack(nextIndex);
+          if (activeCategory === "myMusic") {
+            const nextIndex = getNextTrackIndex();
+            switchTrack(nextIndex);
+          }
         });
 
         moonTrack.addEventListener("ended", () => {
-          let nextIndex = currentTrackIndex + 1;
-          if (nextIndex >= tracks.length) nextIndex = 0;
-          switchTrack(nextIndex);
+          if (activeCategory === "myMusic") {
+            const nextIndex = getNextTrackIndex();
+            switchTrack(nextIndex);
+          }
         });
 
         // Make sure all old music tracks end event is handled
         oldMusicTracks.forEach((track, idx) => {
           track.element.addEventListener("ended", () => {
-            // Auto play next track
-            let nextIndex = currentTrackIndex + 1;
-            if (nextIndex >= tracks.length) nextIndex = 0;
-            switchTrack(nextIndex);
+            if (activeCategory === "likedMusic") {
+              const nextIndex = getNextTrackIndex();
+              switchTrack(nextIndex);
+            }
           });
         });
 
@@ -2492,7 +2751,7 @@
               // Ensure positioned class is added
               musicPlayer.classList.add("positioned");
 
-              // Get initial position
+              // Get initial position - recalculate every time
               const rect = musicPlayer.getBoundingClientRect();
 
               // Calculate offset from pointer to player edges
@@ -2529,12 +2788,15 @@
             const minX = -playerWidth * 0.7;
             const minY = -playerHeight * 0.1;
 
-            // Apply constrained position
+            // Apply constrained position with direct positioning
+            // Use top/left instead of transform to avoid conflicts
             const constrainedX = Math.min(Math.max(x, minX), maxX);
             const constrainedY = Math.min(Math.max(y, minY), maxY);
 
             musicPlayer.style.left = `${constrainedX}px`;
             musicPlayer.style.top = `${constrainedY}px`;
+            musicPlayer.style.right = "auto"; // Clear right positioning
+            musicPlayer.style.transform = "none"; // Clear transform
           }
 
           function endDrag() {
@@ -2546,10 +2808,30 @@
             document.removeEventListener("mouseup", endDrag);
           }
 
-          // Reset position when player is closed and reopened
-          closePlayerBtn.addEventListener("click", () => {
-            hidePlayer();
-          });
+          // Add a reset method for complete reinitialization
+          function resetPosition() {
+            if (window.matchMedia("(min-width: 769px)").matches) {
+              // Clear all positioning before resetting to default
+              musicPlayer.style.left = "";
+              musicPlayer.style.top = "";
+              musicPlayer.style.right = "20px";
+              musicPlayer.style.transform = "translate(0, -50%)";
+            }
+          }
+
+          // Reset player position before showing it again
+          const originalShowPlayer = showPlayer;
+          showPlayer = function () {
+            // Reset positioning before showing
+            if (window.matchMedia("(min-width: 769px)").matches) {
+              resetPosition();
+            }
+            // Call original function
+            originalShowPlayer();
+          };
+
+          // Reset position when player is closed
+          closePlayerBtn.addEventListener("click", hidePlayer);
 
           // Adjust for window resize
           window.addEventListener("resize", () => {
@@ -2605,21 +2887,7 @@
 
           // Return public methods if needed
           return {
-            reset: () => {
-              if (window.matchMedia("(min-width: 769px)").matches) {
-                // For desktop, reset to right side
-                musicPlayer.style.right = "20px";
-                musicPlayer.style.left = "";
-                musicPlayer.style.top = "50%";
-                musicPlayer.style.transform = "translate(0, -50%)";
-              } else {
-                // For mobile, center the player
-                musicPlayer.style.bottom = "50%";
-                musicPlayer.style.left = "50%";
-                musicPlayer.style.right = "auto";
-                musicPlayer.style.transform = "translate(-50%, 50%)";
-              }
-            },
+            reset: resetPosition,
           };
         })();
 
@@ -2645,6 +2913,38 @@
             musicPlayer.offsetHeight
           );
         };
+
+        function playOldMusic(track) {
+          stopAllTracks();
+
+          // Remove playing class from all items
+          const musicItems = document.querySelectorAll(".music-item");
+          musicItems.forEach((item) => item.classList.remove("playing"));
+
+          // Add playing class to the clicked item
+          const clickedItem = document.querySelector(
+            `.music-item[data-track-id="${track.id}"]`
+          );
+          if (clickedItem) clickedItem.classList.add("playing");
+
+          currentTrack = track.element;
+
+          // Find the track index in the likedTracks array
+          const trackIndex = oldMusicTracks.findIndex((t) => t.id === track.id);
+          currentTrackIndex = trackIndex >= 0 ? trackIndex : 0;
+
+          playerTitle.textContent = track.title;
+
+          // Set a default artwork for old music
+          playerArtwork.style.backgroundImage = `url('Images/oldmusic.jpg')`;
+
+          // Reset visibility state of player to ensure it appears even after being closed
+          musicPlayer.classList.remove("active");
+
+          // Show player and play the track
+          showPlayer();
+          playTrack();
+        }
       });
     </script>
   </body>
