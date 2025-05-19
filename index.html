@@ -1678,6 +1678,94 @@
           right: 8px;
         }
       }
+
+      /* Resize handle styles */
+      .resize-handle {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        z-index: 100;
+        cursor: nwse-resize;
+        transition: transform 0.2s ease, background 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        display: none; /* Hidden by default, shown for desktop */
+      }
+
+      /* Show handles only on desktop and when player is active */
+      @media screen and (min-width: 769px) {
+        .music-player.active .resize-handle {
+          display: block;
+        }
+      }
+
+      .resize-handle:hover,
+      .music-player.resizing .resize-handle {
+        transform: scale(1.3);
+        background: rgba(255, 230, 100, 0.5);
+        box-shadow: 0 0 12px rgba(255, 200, 0, 0.5);
+      }
+
+      .resize-handle.top-left {
+        top: -5px;
+        left: -5px;
+        cursor: nwse-resize;
+      }
+
+      .resize-handle.top-right {
+        top: -5px;
+        right: -5px;
+        cursor: nesw-resize;
+      }
+
+      .resize-handle.bottom-left {
+        bottom: -5px;
+        left: -5px;
+        cursor: nesw-resize;
+      }
+
+      .resize-handle.bottom-right {
+        bottom: -5px;
+        right: -5px;
+        cursor: nwse-resize;
+      }
+
+      /* Visual feedback during resize */
+      .music-player.resizing {
+        transition: none !important;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4),
+          0 0 25px rgba(255, 200, 0, 0.3),
+          inset 0 0 0 2px rgba(255, 230, 100, 0.5) !important;
+      }
+
+      /* Additional styles for the player when it's been positioned/resized */
+      .music-player.positioned {
+        transition: none;
+        right: auto;
+        bottom: auto;
+      }
+
+      /* Add responsive styles for when player has been resized */
+      .music-player.positioned .player-controls,
+      .music-player.positioned .volume-control {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      /* Ensure player size is reset on mobile */
+      @media screen and (max-width: 768px) {
+        .music-player {
+          width: 100% !important;
+          height: auto !important;
+        }
+
+        .music-player .player-artwork {
+          width: 240px !important;
+          height: 135px !important;
+        }
+      }
     </style>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Dancing+Script:wght@500;700&display=swap"
@@ -1849,6 +1937,13 @@
     <div class="music-player" id="musicPlayer">
       <div class="drag-handle" id="dragHandle"></div>
       <button class="close-player" id="closePlayer">×</button>
+      <div class="resize-handle top-left" id="resizeHandleTopLeft"></div>
+      <div class="resize-handle top-right" id="resizeHandleTopRight"></div>
+      <div class="resize-handle bottom-left" id="resizeHandleBottomLeft"></div>
+      <div
+        class="resize-handle bottom-right"
+        id="resizeHandleBottomRight"
+      ></div>
       <div class="player-artwork" id="playerArtwork">
         <button class="player-btn shuffle" id="shuffleBtn" title="Shuffle">
           ထ
@@ -3420,27 +3515,207 @@
           };
         })();
 
-        // Add a debug check to verify player visibility
-        window.checkPlayerVisibility = () => {
-          console.log(
-            "Player active:",
-            musicPlayer.classList.contains("active")
-          );
-          console.log(
-            "Player visibility:",
-            getComputedStyle(musicPlayer).visibility
-          );
-          console.log("Player opacity:", getComputedStyle(musicPlayer).opacity);
-          console.log(
-            "Player transform:",
-            getComputedStyle(musicPlayer).transform
-          );
-          console.log(
-            "Player dimensions:",
-            musicPlayer.offsetWidth,
-            "x",
-            musicPlayer.offsetHeight
-          );
+        // Make music player resizable
+        const musicPlayerResize = (() => {
+          const musicPlayer = document.getElementById("musicPlayer");
+          const resizeHandles = {
+            topLeft: document.getElementById("resizeHandleTopLeft"),
+            topRight: document.getElementById("resizeHandleTopRight"),
+            bottomLeft: document.getElementById("resizeHandleBottomLeft"),
+            bottomRight: document.getElementById("resizeHandleBottomRight"),
+          };
+
+          let isResizing = false;
+          let currentHandle = null;
+          let startX, startY, startWidth, startHeight, startLeft, startTop;
+
+          // Min/max constraints for player size
+          const MIN_WIDTH = 280;
+          const MIN_HEIGHT = 400;
+          const MAX_WIDTH = window.innerWidth * 0.8;
+          const MAX_HEIGHT = window.innerHeight * 0.8;
+
+          // Only enable resizing for desktop
+          if (window.matchMedia("(min-width: 769px)").matches) {
+            // Add event listeners to all resize handles
+            Object.keys(resizeHandles).forEach((key) => {
+              const handle = resizeHandles[key];
+              handle.addEventListener("mousedown", (e) => {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent triggering drag
+                startResize(e, key);
+              });
+            });
+          }
+
+          function startResize(e, handleKey) {
+            if (
+              !musicPlayer.classList.contains("active") ||
+              window.matchMedia("(max-width: 768px)").matches
+            ) {
+              return;
+            }
+
+            isResizing = true;
+            currentHandle = handleKey;
+
+            // Get initial dimensions and position
+            const rect = musicPlayer.getBoundingClientRect();
+            startWidth = rect.width;
+            startHeight = rect.height;
+            startLeft = rect.left;
+            startTop = rect.top;
+            startX = e.clientX;
+            startY = e.clientY;
+
+            // Add resizing class for visual feedback
+            musicPlayer.classList.add("resizing");
+
+            // Add resize events
+            document.addEventListener("mousemove", resize);
+            document.addEventListener("mouseup", endResize);
+          }
+
+          function resize(e) {
+            if (!isResizing) return;
+
+            // Calculate cursor movement
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+
+            let newWidth = startWidth;
+            let newHeight = startHeight;
+            let newLeft = startLeft;
+            let newTop = startTop;
+
+            // Apply resize based on which handle is being dragged
+            switch (currentHandle) {
+              case "topLeft":
+                newWidth = Math.max(MIN_WIDTH, startWidth - dx);
+                newHeight = Math.max(MIN_HEIGHT, startHeight - dy);
+                newLeft = startLeft + (startWidth - newWidth);
+                newTop = startTop + (startHeight - newHeight);
+                break;
+              case "topRight":
+                newWidth = Math.max(MIN_WIDTH, startWidth + dx);
+                newHeight = Math.max(MIN_HEIGHT, startHeight - dy);
+                newTop = startTop + (startHeight - newHeight);
+                break;
+              case "bottomLeft":
+                newWidth = Math.max(MIN_WIDTH, startWidth - dx);
+                newHeight = Math.max(MIN_HEIGHT, startHeight + dy);
+                newLeft = startLeft + (startWidth - newWidth);
+                break;
+              case "bottomRight":
+                newWidth = Math.max(MIN_WIDTH, startWidth + dx);
+                newHeight = Math.max(MIN_HEIGHT, startHeight + dy);
+                break;
+            }
+
+            // Apply constraints
+            newWidth = Math.min(newWidth, MAX_WIDTH);
+            newHeight = Math.min(newHeight, MAX_HEIGHT);
+
+            // Keep player within window bounds
+            newLeft = Math.max(
+              0,
+              Math.min(newLeft, window.innerWidth - newWidth)
+            );
+            newTop = Math.max(
+              0,
+              Math.min(newTop, window.innerHeight - newHeight)
+            );
+
+            // Apply new size and position
+            musicPlayer.style.width = `${newWidth}px`;
+            musicPlayer.style.height = `${newHeight}px`;
+            musicPlayer.style.left = `${newLeft}px`;
+            musicPlayer.style.top = `${newTop}px`;
+
+            // Make sure we're using positioned mode
+            musicPlayer.classList.add("positioned");
+
+            // Adjust artwork size proportionally to maintain aspect ratio
+            const artworkMaxWidth = newWidth * 0.75;
+            const playerArtwork = document.getElementById("playerArtwork");
+            playerArtwork.style.width = `${artworkMaxWidth}px`;
+            playerArtwork.style.height = `${artworkMaxWidth * 0.5625}px`; // Maintain 16:9 aspect ratio
+          }
+
+          function endResize() {
+            isResizing = false;
+            currentHandle = null;
+            musicPlayer.classList.remove("resizing");
+
+            // Remove resize event listeners
+            document.removeEventListener("mousemove", resize);
+            document.removeEventListener("mouseup", endResize);
+          }
+
+          // Reset player dimensions
+          function resetSize() {
+            if (!musicPlayer.classList.contains("positioned")) {
+              musicPlayer.style.width = "";
+              musicPlayer.style.height = "";
+
+              // Reset artwork size
+              const playerArtwork = document.getElementById("playerArtwork");
+              playerArtwork.style.width = "";
+              playerArtwork.style.height = "";
+            }
+          }
+
+          // Reset size when window resizes to revert to responsive design
+          window.addEventListener("resize", () => {
+            // Only reset if screen becomes mobile sized
+            if (window.matchMedia("(max-width: 768px)").matches) {
+              musicPlayer.style.width = "";
+              musicPlayer.style.height = "";
+              const playerArtwork = document.getElementById("playerArtwork");
+              playerArtwork.style.width = "";
+              playerArtwork.style.height = "";
+
+              // Hide resize handles
+              Object.values(resizeHandles).forEach((handle) => {
+                handle.style.display = "none";
+              });
+            } else {
+              // Show resize handles for desktop
+              Object.values(resizeHandles).forEach((handle) => {
+                handle.style.display = "block";
+              });
+            }
+          });
+
+          // Add reset method to public API
+          return {
+            reset: resetSize,
+          };
+        })();
+
+        // Ensure player resets correctly when showing
+        const originalShowPlayer = showPlayer;
+        showPlayer = function () {
+          // Reset both position and size before showing
+          if (
+            window.matchMedia("(min-width: 769px)").matches &&
+            !musicPlayer.classList.contains("positioned")
+          ) {
+            if (
+              typeof musicPlayerDrag !== "undefined" &&
+              musicPlayerDrag.reset
+            ) {
+              musicPlayerDrag.reset();
+            }
+            if (
+              typeof musicPlayerResize !== "undefined" &&
+              musicPlayerResize.reset
+            ) {
+              musicPlayerResize.reset();
+            }
+          }
+          // Call original function
+          originalShowPlayer();
         };
 
         // QR Code Button Functionality
@@ -3551,5 +3826,97 @@
         }
       });
     </script>
+
+    <style>
+      /* ... existing styles ... */
+
+      /* Resize handle styles */
+      .resize-handle {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        z-index: 100;
+        cursor: nwse-resize;
+        transition: transform 0.2s ease, background 0.2s ease;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        display: none; /* Hidden by default, shown for desktop */
+      }
+
+      /* Show handles only on desktop and when player is active */
+      @media screen and (min-width: 769px) {
+        .music-player.active .resize-handle {
+          display: block;
+        }
+      }
+
+      .resize-handle:hover,
+      .music-player.resizing .resize-handle {
+        transform: scale(1.3);
+        background: rgba(255, 230, 100, 0.5);
+        box-shadow: 0 0 12px rgba(255, 200, 0, 0.5);
+      }
+
+      .resize-handle.top-left {
+        top: -5px;
+        left: -5px;
+        cursor: nwse-resize;
+      }
+
+      .resize-handle.top-right {
+        top: -5px;
+        right: -5px;
+        cursor: nesw-resize;
+      }
+
+      .resize-handle.bottom-left {
+        bottom: -5px;
+        left: -5px;
+        cursor: nesw-resize;
+      }
+
+      .resize-handle.bottom-right {
+        bottom: -5px;
+        right: -5px;
+        cursor: nwse-resize;
+      }
+
+      /* Visual feedback during resize */
+      .music-player.resizing {
+        transition: none !important;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4),
+          0 0 25px rgba(255, 200, 0, 0.3),
+          inset 0 0 0 2px rgba(255, 230, 100, 0.5) !important;
+      }
+
+      /* Additional styles for the player when it's been positioned/resized */
+      .music-player.positioned {
+        transition: none;
+        right: auto;
+        bottom: auto;
+      }
+
+      /* Add responsive styles for when player has been resized */
+      .music-player.positioned .player-controls,
+      .music-player.positioned .volume-control {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      /* Ensure player size is reset on mobile */
+      @media screen and (max-width: 768px) {
+        .music-player {
+          width: 100% !important;
+          height: auto !important;
+        }
+
+        .music-player .player-artwork {
+          width: 240px !important;
+          height: 135px !important;
+        }
+      }
+    </style>
   </body>
 </html>
