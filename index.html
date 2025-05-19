@@ -219,11 +219,156 @@
       .nav-links a:hover {
         color: rgb(255, 200, 0);
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(255, 200, 0, 0.2);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       }
 
       .nav-links a:hover::after {
         width: 100%;
+      }
+
+      /* QR Code Button and Modal Styles */
+      .qr-code-btn {
+        position: fixed;
+        bottom: 50px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 999;
+      }
+
+      .qr-code-btn:hover {
+        transform: scale(1.1);
+        background: rgba(255, 200, 0, 0.2);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3),
+          0 0 15px rgba(255, 200, 0, 0.3);
+      }
+
+      .qr-code-btn:active {
+        transform: scale(0.95);
+      }
+
+      .qr-code-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s ease;
+      }
+
+      .qr-code-modal.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .qr-code-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        padding: 25px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transform: scale(0.8);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        max-width: 85%;
+      }
+
+      .qr-code-modal.active .qr-code-container {
+        transform: scale(1);
+      }
+
+      .qr-code-title {
+        font-size: 1.3rem;
+        color: #fff;
+        margin-bottom: 15px;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(90deg, #ffeda3, #ffc107, #ffeda3);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .qr-code-image {
+        width: 200px;
+        height: 200px;
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px;
+        margin: 0 auto 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .qr-code-url {
+        color: #fff;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+        word-break: break-all;
+        opacity: 0.9;
+      }
+
+      .close-qr-btn {
+        background: rgba(0, 0, 0, 0.3);
+        border: none;
+        color: #fff;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+      }
+
+      .close-qr-btn:hover {
+        background: rgba(255, 100, 100, 0.3);
+        transform: rotate(90deg);
+      }
+
+      @media screen and (max-width: 480px) {
+        .qr-code-btn {
+          bottom: 70px;
+          width: 40px;
+          height: 40px;
+          font-size: 1rem;
+        }
+
+        .qr-code-image {
+          width: 180px;
+          height: 180px;
+        }
+
+        .qr-code-title {
+          font-size: 1.1rem;
+        }
       }
 
       .rain-container {
@@ -1289,7 +1434,7 @@
       .music-item.playing {
         background: linear-gradient(
           135deg,
-          rgba(20, 20, 20, 0.9),
+          ÷ rgba(20, 20, 20, 0.9),
           rgba(40, 40, 40, 0.9)
         );
         border-color: rgba(255, 200, 0, 0.5);
@@ -1609,6 +1754,29 @@
       <source src="music/oldmusic/Yeh Wada Raha.mp3" type="audio/mpeg" />
     </audio>
 
+    <!-- New Songs audio tracks -->
+    <audio id="ishqTrack" preload="none">
+      <source src="music/newmusic/Ishq.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="palPalTrack" preload="none">
+      <source src="music/newmusic/ Pal Pal.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="radhaTrack" preload="none">
+      <source src="music/newmusic/ Radha.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="maandTrack" preload="none">
+      <source src="music/newmusic/Maand.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="findingHerTrack" preload="none">
+      <source src="music/newmusic/Finding Her.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="chalDiyeTrack" preload="none">
+      <source src="music/newmusic/Chal Diye Tum Kahan.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="jholTrack" preload="none">
+      <source src="music/newmusic/Jhol.mp3" type="audio/mpeg" />
+    </audio>
+
     <!-- Add sound control button -->
     <div class="sound-control">
       <div class="rain-volume-container" id="rainVolumeContainer">
@@ -1637,8 +1805,9 @@
 
       <!-- Category selector buttons -->
       <div class="category-selector">
-        <button id="myMusicBtn" class="category-btn active">My Music</button>
-        <button id="likedMusicBtn" class="category-btn">Liked Music</button>
+        <button id="myMusicBtn" class="category-btn active">Mine</button>
+        <button id="likedMusicBtn" class="category-btn">Mehfeel</button>
+        <button id="newSongsBtn" class="category-btn">Sukoon</button>
       </div>
 
       <!-- My Music Category -->
@@ -1662,6 +1831,16 @@
           <p class="subtitle">Music Liked By Me</p>
         </div>
         <div class="music-grid" id="oldMusicGrid">
+          <!-- Music items will be generated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- New Songs Category -->
+      <div id="newSongsCategory" class="music-category">
+        <div class="subtitle-container">
+          <p class="subtitle">Latest Song Collections</p>
+        </div>
+        <div class="music-grid" id="newSongsGrid">
           <!-- Music items will be generated by JavaScript -->
         </div>
       </div>
@@ -1701,6 +1880,28 @@
     </div>
 
     <div class="footer">© 2025 ABUZAR</div>
+
+    <!-- QR Code Button -->
+    <button class="qr-code-btn" id="qrCodeBtn" aria-label="Show QR Code">
+      <span>⊞</span>
+    </button>
+
+    <!-- QR Code Modal -->
+    <div class="qr-code-modal" id="qrCodeModal">
+      <div class="qr-code-container">
+        <button class="close-qr-btn" id="closeQrBtn">×</button>
+        <h3 class="qr-code-title">Scan to visit KwikMusic</h3>
+        <div class="qr-code-image">
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://kwikmusic.netlify.app/"
+            alt="QR Code for KwikMusic"
+            width="100%"
+            height="100%"
+          />
+        </div>
+        <p class="qr-code-url">https://kwikmusic.netlify.app/</p>
+      </div>
+    </div>
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
@@ -1791,19 +1992,93 @@
           },
         ];
 
+        // Get new songs tracks
+        const newSongsTracks = [
+          {
+            id: "ishqTrack",
+            element: document.getElementById("ishqTrack"),
+            title: "Ishq",
+          },
+          {
+            id: "palPalTrack",
+            element: document.getElementById("palPalTrack"),
+            title: "Pal Pal",
+          },
+          {
+            id: "radhaTrack",
+            element: document.getElementById("radhaTrack"),
+            title: "Radha",
+          },
+          {
+            id: "maandTrack",
+            element: document.getElementById("maandTrack"),
+            title: "Maand",
+          },
+          {
+            id: "findingHerTrack",
+            element: document.getElementById("findingHerTrack"),
+            title: "Finding Her",
+          },
+          {
+            id: "chalDiyeTrack",
+            element: document.getElementById("chalDiyeTrack"),
+            title: "Chal Diye Tum Kahan",
+          },
+          {
+            id: "jholTrack",
+            element: document.getElementById("jholTrack"),
+            title: "Jhol",
+          },
+        ];
+
         // Get category buttons
         const myMusicBtn = document.getElementById("myMusicBtn");
         const likedMusicBtn = document.getElementById("likedMusicBtn");
+        const newSongsBtn = document.getElementById("newSongsBtn");
         const myMusicCategory = document.getElementById("myMusicCategory");
         const likedMusicCategory =
           document.getElementById("likedMusicCategory");
+        const newSongsCategory = document.getElementById("newSongsCategory");
 
         // Generate old music grid items
         const oldMusicGrid = document.getElementById("oldMusicGrid");
         generateOldMusicGrid();
 
+        // Generate new songs grid items
+        const newSongsGrid = document.getElementById("newSongsGrid");
+        generateNewSongsGrid();
+
         // Track the current active category
         let activeCategory = "myMusic";
+
+        // Function to generate the new songs grid
+        function generateNewSongsGrid() {
+          newSongsGrid.innerHTML = ""; // Clear existing content
+
+          newSongsTracks.forEach((track) => {
+            const musicItem = document.createElement("div");
+            musicItem.classList.add("music-item");
+            musicItem.dataset.trackId = track.id;
+
+            const musicIcon = document.createElement("div");
+            musicIcon.classList.add("music-icon");
+            musicIcon.innerHTML = "🎵"; // Different icon for new songs
+
+            const musicTitle = document.createElement("div");
+            musicTitle.classList.add("music-title");
+            musicTitle.textContent = track.title;
+
+            musicItem.appendChild(musicIcon);
+            musicItem.appendChild(musicTitle);
+
+            // Add click event
+            musicItem.addEventListener("click", () => {
+              playNewSong(track);
+            });
+
+            newSongsGrid.appendChild(musicItem);
+          });
+        }
 
         // Function to generate the old music grid
         function generateOldMusicGrid() {
@@ -1838,12 +2113,16 @@
         myMusicBtn.addEventListener("click", () => {
           myMusicBtn.classList.add("active");
           likedMusicBtn.classList.remove("active");
+          newSongsBtn.classList.remove("active");
+
           myMusicCategory.classList.add("active");
           likedMusicCategory.classList.remove("active");
+          newSongsCategory.classList.remove("active");
+
           activeCategory = "myMusic";
 
-          // If music is currently playing from liked category, stop it
-          if (currentTrack && isLikedMusicTrack(currentTrack)) {
+          // If music is currently playing from another category, stop it
+          if (currentTrack && !isMyMusicTrack(currentTrack)) {
             stopAllTracks();
             currentTrack = null;
             currentTrackIndex = -1;
@@ -1854,12 +2133,36 @@
         likedMusicBtn.addEventListener("click", () => {
           likedMusicBtn.classList.add("active");
           myMusicBtn.classList.remove("active");
+          newSongsBtn.classList.remove("active");
+
           likedMusicCategory.classList.add("active");
           myMusicCategory.classList.remove("active");
+          newSongsCategory.classList.remove("active");
+
           activeCategory = "likedMusic";
 
-          // If music is currently playing from my music category, stop it
-          if (currentTrack && isMyMusicTrack(currentTrack)) {
+          // If music is currently playing from another category, stop it
+          if (currentTrack && !isLikedMusicTrack(currentTrack)) {
+            stopAllTracks();
+            currentTrack = null;
+            currentTrackIndex = -1;
+            hidePlayer();
+          }
+        });
+
+        newSongsBtn.addEventListener("click", () => {
+          newSongsBtn.classList.add("active");
+          myMusicBtn.classList.remove("active");
+          likedMusicBtn.classList.remove("active");
+
+          newSongsCategory.classList.add("active");
+          myMusicCategory.classList.remove("active");
+          likedMusicCategory.classList.remove("active");
+
+          activeCategory = "newSongs";
+
+          // If music is currently playing from another category, stop it
+          if (currentTrack && !isNewSongTrack(currentTrack)) {
             stopAllTracks();
             currentTrack = null;
             currentTrackIndex = -1;
@@ -1880,6 +2183,10 @@
           return oldMusicTracks.some((oldTrack) => oldTrack.element === track);
         }
 
+        function isNewSongTrack(track) {
+          return newSongsTracks.some((newTrack) => newTrack.element === track);
+        }
+
         // Set initial volume
         rainSound.volume = 0.4;
         bassIshqTrack.volume = 0.7;
@@ -1888,6 +2195,11 @@
 
         // Set initial volume for old music tracks too
         oldMusicTracks.forEach((track) => {
+          track.element.volume = 0.7;
+        });
+
+        // Set initial volume for new songs tracks too
+        newSongsTracks.forEach((track) => {
           track.element.volume = 0.7;
         });
 
@@ -1926,13 +2238,19 @@
             track.element.currentTime = 0;
           });
 
+          // Stop all new song tracks
+          newSongsTracks.forEach((track) => {
+            track.element.pause();
+            track.element.currentTime = 0;
+          });
+
           // Remove active class from all buttons
           homeBtn.classList.remove("active-track");
           workBtn.classList.remove("active-track");
           aboutBtn.classList.remove("active-track");
           contactBtn.classList.remove("active-track");
 
-          // Remove playing class from all old music items
+          // Remove playing class from all music items
           const musicItems = document.querySelectorAll(".music-item");
           musicItems.forEach((item) => item.classList.remove("playing"));
         }
@@ -2289,6 +2607,14 @@
           artwork: "Images/oldmusic.jpg", // Default artwork for old music
         }));
 
+        // New songs tracks
+        const newSongs = newSongsTracks.map((track) => ({
+          element: track.element,
+          title: track.title,
+          button: null, // No button for new songs
+          artwork: "Images/anzar.jpg", // Default artwork for new songs
+        }));
+
         // Shuffle state
         let shuffleEnabled = false;
         let shuffleOrder = [];
@@ -2298,7 +2624,10 @@
 
         // Function to get current category tracks
         function getCurrentCategoryTracks() {
-          return activeCategory === "myMusic" ? myMusicTracks : likedTracks;
+          if (activeCategory === "myMusic") return myMusicTracks;
+          if (activeCategory === "likedMusic") return likedTracks;
+          if (activeCategory === "newSongs") return newSongs;
+          return myMusicTracks; // Default
         }
 
         function formatTime(seconds) {
@@ -2333,7 +2662,15 @@
             playerTitle.textContent = currentTracks[currentTrackIndex].title;
 
             // Update the artwork
-            playerArtwork.style.backgroundImage = `url(${currentTracks[currentTrackIndex].artwork})`;
+            if (activeCategory === "myMusic") {
+              playerArtwork.style.backgroundImage = `url(${currentTracks[currentTrackIndex].artwork})`;
+            } else if (activeCategory === "likedMusic") {
+              // For liked music, use default artwork
+              playerArtwork.style.backgroundImage = `url('Images/oldmusic.jpg')`;
+            } else if (activeCategory === "newSongs") {
+              // For new songs, use default artwork
+              playerArtwork.style.backgroundImage = `url('Images/anzar.jpg')`;
+            }
 
             // Highlight the corresponding button if it exists
             if (activeCategory === "myMusic") {
@@ -2346,7 +2683,7 @@
                   "active-track"
                 );
               }
-            } else {
+            } else if (activeCategory === "likedMusic") {
               // For liked music, highlight the item in the grid
               const musicItems = document.querySelectorAll(".music-item");
               musicItems.forEach((item) => item.classList.remove("playing"));
@@ -2354,6 +2691,19 @@
               // Find the corresponding old music track
               if (index >= 0 && index < oldMusicTracks.length) {
                 const trackId = oldMusicTracks[index].id;
+                const item = document.querySelector(
+                  `.music-item[data-track-id="${trackId}"]`
+                );
+                if (item) item.classList.add("playing");
+              }
+            } else if (activeCategory === "newSongs") {
+              // For new songs, highlight the item in the grid
+              const musicItems = document.querySelectorAll(".music-item");
+              musicItems.forEach((item) => item.classList.remove("playing"));
+
+              // Find the corresponding new song track
+              if (index >= 0 && index < newSongsTracks.length) {
+                const trackId = newSongsTracks[index].id;
                 const item = document.querySelector(
                   `.music-item[data-track-id="${trackId}"]`
                 );
@@ -2595,19 +2945,6 @@
             musicPlayer.style.left = "";
             musicPlayer.style.top = "";
           }
-
-          pauseTrack();
-          stopAllTracks();
-
-          // Reset position when hidden - for desktop only
-          if (window.matchMedia("(min-width: 769px)").matches) {
-            setTimeout(() => {
-              musicPlayer.style.right = "20px";
-              musicPlayer.style.left = "";
-              musicPlayer.style.top = "50%";
-              musicPlayer.style.transform = "translate(0, -50%)";
-            }, 400);
-          }
         }
 
         // Improved event handling for both mouse and touch events
@@ -2649,6 +2986,11 @@
 
           // Update old music tracks volume
           oldMusicTracks.forEach((track) => {
+            track.element.volume = percent;
+          });
+
+          // Update new songs tracks volume
+          newSongsTracks.forEach((track) => {
             track.element.volume = percent;
           });
 
@@ -2781,6 +3123,11 @@
             track.element.volume = percent;
           });
 
+          // Update new songs tracks volume
+          newSongsTracks.forEach((track) => {
+            track.element.volume = percent;
+          });
+
           // Update the UI
           volumeLevel.style.width = `${percent * 100}%`;
         });
@@ -2841,6 +3188,16 @@
         oldMusicTracks.forEach((track, idx) => {
           track.element.addEventListener("ended", () => {
             if (activeCategory === "likedMusic") {
+              const nextIndex = getNextTrackIndex();
+              switchTrack(nextIndex);
+            }
+          });
+        });
+
+        // Make sure all new songs tracks end event is handled
+        newSongsTracks.forEach((track, idx) => {
+          track.element.addEventListener("ended", () => {
+            if (activeCategory === "newSongs") {
               const nextIndex = getNextTrackIndex();
               switchTrack(nextIndex);
             }
@@ -3086,6 +3443,43 @@
           );
         };
 
+        // QR Code Button Functionality
+        const qrCodeBtn = document.getElementById("qrCodeBtn");
+        const qrCodeModal = document.getElementById("qrCodeModal");
+        const closeQrBtn = document.getElementById("closeQrBtn");
+
+        qrCodeBtn.addEventListener("click", () => {
+          qrCodeModal.classList.add("active");
+          // Pause music if it's playing to avoid distractions
+          if (currentTrack && !currentTrack.paused) {
+            pauseTrack();
+            // Set a flag to remember we paused it
+            currentTrack.dataset.pausedByQr = "true";
+          }
+        });
+
+        closeQrBtn.addEventListener("click", () => {
+          qrCodeModal.classList.remove("active");
+          // Resume music if it was playing before
+          if (currentTrack && currentTrack.dataset.pausedByQr === "true") {
+            playTrack();
+            delete currentTrack.dataset.pausedByQr;
+          }
+        });
+
+        // Close modal when clicking outside the QR code container
+        qrCodeModal.addEventListener("click", (e) => {
+          if (e.target === qrCodeModal) {
+            qrCodeModal.classList.remove("active");
+            // Resume music if it was playing before
+            if (currentTrack && currentTrack.dataset.pausedByQr === "true") {
+              playTrack();
+              delete currentTrack.dataset.pausedByQr;
+            }
+          }
+        });
+
+        // Add the missing functions for playing old music and new songs
         function playOldMusic(track) {
           stopAllTracks();
 
@@ -3099,22 +3493,60 @@
           );
           if (clickedItem) clickedItem.classList.add("playing");
 
+          // Set the current track
           currentTrack = track.element;
 
-          // Find the track index in the likedTracks array
+          // Find the track index in the oldMusicTracks array
           const trackIndex = oldMusicTracks.findIndex((t) => t.id === track.id);
           currentTrackIndex = trackIndex >= 0 ? trackIndex : 0;
 
+          // Update the player title
           playerTitle.textContent = track.title;
 
-          // Set a default artwork for old music
+          // Set artwork for old music
           playerArtwork.style.backgroundImage = `url('Images/oldmusic.jpg')`;
 
-          // Reset visibility state of player to ensure it appears even after being closed
-          musicPlayer.classList.remove("active");
+          // Show the player if it's not already visible
+          if (!musicPlayer.classList.contains("active")) {
+            showPlayer();
+          }
 
-          // Show player and play the track
-          showPlayer();
+          // Play the track
+          playTrack();
+        }
+
+        function playNewSong(track) {
+          stopAllTracks();
+
+          // Remove playing class from all items
+          const musicItems = document.querySelectorAll(".music-item");
+          musicItems.forEach((item) => item.classList.remove("playing"));
+
+          // Add playing class to the clicked item
+          const clickedItem = document.querySelector(
+            `.music-item[data-track-id="${track.id}"]`
+          );
+          if (clickedItem) clickedItem.classList.add("playing");
+
+          // Set the current track
+          currentTrack = track.element;
+
+          // Find the track index in the newSongsTracks array
+          const trackIndex = newSongsTracks.findIndex((t) => t.id === track.id);
+          currentTrackIndex = trackIndex >= 0 ? trackIndex : 0;
+
+          // Update the player title
+          playerTitle.textContent = track.title;
+
+          // Set artwork for new songs
+          playerArtwork.style.backgroundImage = `url('Images/anzar.jpg')`;
+
+          // Show the player if it's not already visible
+          if (!musicPlayer.classList.contains("active")) {
+            showPlayer();
+          }
+
+          // Play the track
           playTrack();
         }
       });
