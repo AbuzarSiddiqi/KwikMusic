@@ -14,6 +14,9 @@
       sizes="180x180"
       href="Images/apple-touch-icon.png"
     />
+    <!-- Add metadata for audio session -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="KwikMusic" />
     <title>KwikMusic</title>
     <style>
       * {
@@ -1776,19 +1779,19 @@
   <body>
     <div class="rain-container" id="rainContainer"></div>
 
-    <!-- Audio elements -->
-    <audio id="rainSound" loop preload="auto">
+    <!-- Audio elements with playsinline attribute for iOS -->
+    <audio id="rainSound" loop preload="auto" playsinline>
       <source src="music/Rain.m4a" type="audio/mp4" />
       Your browser does not support the audio element.
     </audio>
 
     <!-- My Music audio tracks -->
-    <audio id="bassIshqTrack" preload="auto">
+    <audio id="bassIshqTrack" preload="auto" playsinline>
       <source src="music/BassIshq.mp3" type="audio/mpeg" />
       Your browser does not support the audio element.
     </audio>
 
-    <audio id="dilKiDuniyaTrack" preload="auto">
+    <audio id="dilKiDuniyaTrack" preload="auto" playsinline>
       <source
         src="music/Dil Ki Duniya Ujaad Baithi Hai.mp3"
         type="audio/mpeg"
@@ -1796,72 +1799,72 @@
       Your browser does not support the audio element.
     </audio>
 
-    <audio id="moonTrack" preload="auto">
+    <audio id="moonTrack" preload="auto" playsinline>
       <source src="music/Moon.mp3" type="audio/mpeg" />
       Your browser does not support the audio element.
     </audio>
 
-    <!-- Old music tracks -->
-    <audio id="ahistaAhistaTrack" preload="none">
+    <!-- Old music tracks with playsinline attribute -->
+    <audio id="ahistaAhistaTrack" preload="none" playsinline>
       <source src="music/oldmusic/Ahista Ahista.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="chupkeChupkeTrack" preload="none">
+    <audio id="chupkeChupkeTrack" preload="none" playsinline>
       <source src="music/oldmusic/Chupke Chupke.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="dilToBachchaTrack" preload="none">
+    <audio id="dilToBachchaTrack" preload="none" playsinline>
       <source src="music/oldmusic/DIL TO BACHCHA HAI.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="hamariSansonTrack" preload="none">
+    <audio id="hamariSansonTrack" preload="none" playsinline>
       <source src="music/oldmusic/HAMARI SANSON.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="hastaNooraniTrack" preload="none">
+    <audio id="hastaNooraniTrack" preload="none" playsinline>
       <source src="music/oldmusic/Hasta Hua Noorani.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="janeWohKaiseTrack" preload="none">
+    <audio id="janeWohKaiseTrack" preload="none" playsinline>
       <source src="music/oldmusic/Jane Woh Kaise.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="kaunTujheTrack" preload="none">
+    <audio id="kaunTujheTrack" preload="none" playsinline>
       <source src="music/oldmusic/Kaun Tujhe.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="mereMehboobTrack" preload="none">
+    <audio id="mereMehboobTrack" preload="none" playsinline>
       <source src="music/oldmusic/Mere Mehboob.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="raftaRaftaTrack" preload="none">
+    <audio id="raftaRaftaTrack" preload="none" playsinline>
       <source src="music/oldmusic/Rafta Rafta.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="usModSeTrack" preload="none">
+    <audio id="usModSeTrack" preload="none" playsinline>
       <source src="music/oldmusic/Us Mod Se.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="yehHastaTrack" preload="none">
+    <audio id="yehHastaTrack" preload="none" playsinline>
       <source src="music/oldmusic/Yeh Hansta Hua.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="yehShaamTrack" preload="none">
+    <audio id="yehShaamTrack" preload="none" playsinline>
       <source src="music/oldmusic/Yeh Shaam.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="yehWadaTrack" preload="none">
+    <audio id="yehWadaTrack" preload="none" playsinline>
       <source src="music/oldmusic/Yeh Wada Raha.mp3" type="audio/mpeg" />
     </audio>
 
-    <!-- New Songs audio tracks -->
-    <audio id="ishqTrack" preload="none">
+    <!-- New Songs audio tracks with playsinline attribute -->
+    <audio id="ishqTrack" preload="none" playsinline>
       <source src="music/newmusic/Ishq.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="palPalTrack" preload="none">
+    <audio id="palPalTrack" preload="none" playsinline>
       <source src="music/newmusic/ Pal Pal.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="radhaTrack" preload="none">
+    <audio id="radhaTrack" preload="none" playsinline>
       <source src="music/newmusic/ Radha.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="maandTrack" preload="none">
+    <audio id="maandTrack" preload="none" playsinline>
       <source src="music/newmusic/Maand.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="findingHerTrack" preload="none">
+    <audio id="findingHerTrack" preload="none" playsinline>
       <source src="music/newmusic/Finding Her.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="chalDiyeTrack" preload="none">
+    <audio id="chalDiyeTrack" preload="none" playsinline>
       <source src="music/newmusic/Chal Diye Tum Kahan.mp3" type="audio/mpeg" />
     </audio>
-    <audio id="jholTrack" preload="none">
+    <audio id="jholTrack" preload="none" playsinline>
       <source src="music/newmusic/Jhol.mp3" type="audio/mpeg" />
     </audio>
 
@@ -3754,7 +3757,123 @@
           }
         });
 
-        // Add the missing functions for playing old music and new songs
+        // Add MediaSession API support for lock screen controls
+        function updateMediaSession(track, title, artwork) {
+          if ("mediaSession" in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+              title: title || "Unknown Track",
+              artist: "KwikMusic",
+              album:
+                activeCategory === "myMusic"
+                  ? "Mine"
+                  : activeCategory === "likedMusic"
+                  ? "Mehfeel"
+                  : "Sukoon",
+              artwork: [
+                {
+                  src: artwork || "Images/KwikmusicLogo.png",
+                  sizes: "512x512",
+                  type: "image/png",
+                },
+              ],
+            });
+
+            // Set action handlers for media keys
+            navigator.mediaSession.setActionHandler("play", () => {
+              playTrack();
+            });
+
+            navigator.mediaSession.setActionHandler("pause", () => {
+              pauseTrack();
+            });
+
+            navigator.mediaSession.setActionHandler("previoustrack", () => {
+              const prevIndex = getPrevTrackIndex();
+              switchTrack(prevIndex);
+            });
+
+            navigator.mediaSession.setActionHandler("nexttrack", () => {
+              const nextIndex = getNextTrackIndex();
+              switchTrack(nextIndex);
+            });
+          }
+        }
+
+        // Modify playTrack function to update MediaSession
+        const originalPlayTrack = playTrack;
+        playTrack = function () {
+          originalPlayTrack();
+
+          if (currentTrack) {
+            let title = playerTitle.textContent;
+            let artworkUrl;
+
+            // Determine artwork URL based on category
+            if (activeCategory === "myMusic") {
+              artworkUrl = playerArtwork.style.backgroundImage.replace(
+                /url\(['"](.+)['"]\)/,
+                "$1"
+              );
+            } else if (activeCategory === "likedMusic") {
+              artworkUrl = "Images/oldmusic.jpg";
+            } else if (activeCategory === "newSongs") {
+              artworkUrl = "Images/anzar.jpg";
+            }
+
+            updateMediaSession(currentTrack, title, artworkUrl);
+          }
+        };
+
+        // Modify switchTrack function to enable background audio on iOS
+        const originalSwitchTrack = switchTrack;
+        switchTrack = function (index) {
+          originalSwitchTrack(index);
+
+          // For iOS, we need to ensure audio can play in background
+          if (currentTrack) {
+            enableBackgroundAudio();
+          }
+        };
+
+        // Function to enable background audio playback on iOS
+        function enableBackgroundAudio() {
+          if (currentTrack) {
+            // For iOS devices
+            if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+              document.body.addEventListener(
+                "touchend",
+                () => {
+                  // This empty event handler helps with iOS audio policies
+                },
+                { once: true }
+              );
+
+              // Set audio to play in background
+              try {
+                if (currentTrack.setAttribute) {
+                  currentTrack.setAttribute("playsinline", "");
+                }
+
+                // Add audio session workarounds for iOS
+                if (typeof AudioContext !== "undefined") {
+                  const audioCtx = new AudioContext();
+                  // Creating an unused oscillator helps keep the audio context alive
+                  const oscillator = audioCtx.createOscillator();
+                  oscillator.connect(audioCtx.destination);
+                  oscillator.start();
+                  oscillator.stop(0.001); // Stop almost immediately
+                }
+              } catch (e) {
+                console.log("Error setting up background audio:", e);
+              }
+            }
+          }
+        }
+
+        // Call this once to initialize on page load
+        enableBackgroundAudio();
+
+        // Modify the function that plays old music to update media session
         function playOldMusic(track) {
           stopAllTracks();
 
@@ -3788,8 +3907,13 @@
 
           // Play the track
           playTrack();
+
+          // Add the following at the end of the function:
+          updateMediaSession(track.element, track.title, "Images/oldmusic.jpg");
+          enableBackgroundAudio();
         }
 
+        // Modify the function that plays new songs to update media session
         function playNewSong(track) {
           stopAllTracks();
 
@@ -3822,101 +3946,22 @@
           }
 
           // Play the track
+
           playTrack();
+
+          // Add the following at the end of the function:
+          updateMediaSession(track.element, track.title, "Images/anzar.jpg");
+          enableBackgroundAudio();
         }
       });
     </script>
 
-    <style>
-      /* ... existing styles ... */
-
-      /* Resize handle styles */
-      .resize-handle {
-        position: absolute;
-        width: 12px;
-        height: 12px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        z-index: 100;
-        cursor: nwse-resize;
-        transition: transform 0.2s ease, background 0.2s ease;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        display: none; /* Hidden by default, shown for desktop */
-      }
-
-      /* Show handles only on desktop and when player is active */
-      @media screen and (min-width: 769px) {
-        .music-player.active .resize-handle {
-          display: block;
-        }
-      }
-
-      .resize-handle:hover,
-      .music-player.resizing .resize-handle {
-        transform: scale(1.3);
-        background: rgba(255, 230, 100, 0.5);
-        box-shadow: 0 0 12px rgba(255, 200, 0, 0.5);
-      }
-
-      .resize-handle.top-left {
-        top: -5px;
-        left: -5px;
-        cursor: nwse-resize;
-      }
-
-      .resize-handle.top-right {
-        top: -5px;
-        right: -5px;
-        cursor: nesw-resize;
-      }
-
-      .resize-handle.bottom-left {
-        bottom: -5px;
-        left: -5px;
-        cursor: nesw-resize;
-      }
-
-      .resize-handle.bottom-right {
-        bottom: -5px;
-        right: -5px;
-        cursor: nwse-resize;
-      }
-
-      /* Visual feedback during resize */
-      .music-player.resizing {
-        transition: none !important;
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4),
-          0 0 25px rgba(255, 200, 0, 0.3),
-          inset 0 0 0 2px rgba(255, 230, 100, 0.5) !important;
-      }
-
-      /* Additional styles for the player when it's been positioned/resized */
-      .music-player.positioned {
-        transition: none;
-        right: auto;
-        bottom: auto;
-      }
-
-      /* Add responsive styles for when player has been resized */
-      .music-player.positioned .player-controls,
-      .music-player.positioned .volume-control {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      /* Ensure player size is reset on mobile */
-      @media screen and (max-width: 768px) {
-        .music-player {
-          width: 100% !important;
-          height: auto !important;
-        }
-
-        .music-player .player-artwork {
-          width: 240px !important;
-          height: 135px !important;
-        }
-      }
-    </style>
+    <!-- Add a hidden controls element for iOS background audio activation -->
+    <audio
+      id="audioActivator"
+      playsinline
+      controls
+      style="position: absolute; top: -10000px"
+    ></audio>
   </body>
 </html>
