@@ -8,15 +8,42 @@
     />
     <!-- Favicon Link -->
     <link rel="icon" type="image/png" href="Images/KwikmusicLogo.png" />
+    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
       href="Images/apple-touch-icon.png"
     />
-    <!-- Add metadata for audio session -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-mobile-web-app-title" content="KwikMusic" />
+    <meta
+      name="description"
+      content="A music streaming web app with ambient rain sounds"
+    />
+    <meta name="theme-color" content="#090111" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- PWA iOS Icon Links -->
+    <link rel="apple-touch-icon" href="Images/pwa/icon-192x192.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="Images/pwa/icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="Images/pwa/icon-192x192.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="167x167"
+      href="Images/pwa/icon-152x152.png"
+    />
+
     <title>KwikMusic</title>
     <style>
       * {
@@ -3954,6 +3981,23 @@
           enableBackgroundAudio();
         }
       });
+
+      // Register the service worker
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+              console.log(
+                "ServiceWorker registration successful with scope: ",
+                registration.scope
+              );
+            })
+            .catch((error) => {
+              console.log("ServiceWorker registration failed: ", error);
+            });
+        });
+      }
     </script>
 
     <!-- Add a hidden controls element for iOS background audio activation -->
