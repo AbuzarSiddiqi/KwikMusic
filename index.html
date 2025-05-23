@@ -1642,7 +1642,7 @@
           135deg,
           rgba(255, 230, 100, 0.8),
           rgba(255, 200, 0, 0.3),
-          rgba(255, 200, 0, 0),
+          rgba(255, 200, 0, 0.),
           rgba(255, 230, 100, 0.4)
         );
       }
@@ -3981,23 +3981,6 @@
           enableBackgroundAudio();
         }
       });
-
-      // Register the service worker
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("/sw.js")
-            .then((registration) => {
-              console.log(
-                "ServiceWorker registration successful with scope: ",
-                registration.scope
-              );
-            })
-            .catch((error) => {
-              console.log("ServiceWorker registration failed: ", error);
-            });
-        });
-      }
     </script>
 
     <!-- Add a hidden controls element for iOS background audio activation -->
